@@ -1,5 +1,9 @@
 /* @pjs preload="base.png, target.png"; */
 
+// before matching, should do histogram normalization
+// binned sorting for matching speed
+// use textured squares instead of get()
+
 PImage base, target;
 PImage baseSmall, targetSmall;
 
@@ -7,6 +11,7 @@ int[] positions, states;
 int pieces = 32;
 float moveTime = 1000;
 
+boolean debug = true;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
@@ -14,7 +19,7 @@ void setup() {
   size(256, 256);
   noSmooth();
   base = loadImage("base.png");
-  target = loadImage("target.png");
+  target = loadImage("x.png");
   matchTarget();
 }
 
@@ -39,7 +44,7 @@ void arrangePieces(PImage img) {
   int k = 0;
   int curTime = millis();
   float backwardsDiff = curTime - backwardsStart;
-  if(lastBackwards == true && backwardsDiff > moveTime) {
+  if (lastBackwards == true && backwardsDiff > moveTime) {
     backwards = false;
     // reset states
     states = new int[states.length];
@@ -52,12 +57,17 @@ void arrangePieces(PImage img) {
       int sx = cx * sw, sy = cy * sh;
       int tx = x * sw, ty = y * sh;
       int dx = abs(tx - sx), dy = abs(ty - sy);
-      float timeDiff = constrain(curTime - states[cur], 0, moveTime);
-      if(backwards) {
-        timeDiff -= backwardsDiff;
+      float state;
+      if (debug) {
+        state = 1;
+      } else {
+        float timeDiff = constrain(curTime - states[cur], 0, moveTime);
+        if (backwards) {
+          timeDiff -= backwardsDiff;
+        }
+        state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
+        state = smoothStep(state);
       }
-      float state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
-      state = smoothStep(state);
       float distance = dx + dy;
       state *= distance;
       float ax, ay;
