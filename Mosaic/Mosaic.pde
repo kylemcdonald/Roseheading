@@ -3,19 +3,18 @@
 PImage base, target;
 PImage baseSmall, targetSmall;
 
-int[] positions;
-int[] states, prevStates;
+int[] positions, states;
 int pieces = 32;
 float moveTime = 1000;
-float startZoom = 0;
-float zoomTime = 2000;
-int clickX, clickY;
+
+boolean backwards = false, lastBackwards = false;
+int backwardsStart = 0;
 
 void setup() {
   size(256, 256);
   noSmooth();
   base = loadImage("base.png");
-  target = loadImage("x.png");
+  target = loadImage("target.png");
   matchTarget();
 }
 
@@ -31,14 +30,21 @@ void matchTarget() {
 
   positions = findMosaic(baseSmall, targetSmall);
   states = new int[positions.length];
-  prevStates = new int[positions.length];
 }
 
-void arrangePieces(PImage img, int[] positions, int[] states, int pw, int ph) {
+void arrangePieces(PImage img) {
   int w = img.width, h = img.height;
+  int pw = pieces, ph = pieces;
   int sw = w / pw, sh = h / ph;
   int k = 0;
   int curTime = millis();
+  float backwardsDiff = curTime - backwardsStart;
+  if(lastBackwards == true && backwardsDiff > moveTime) {
+    backwards = false;
+    // reset states
+    states = new int[states.length];
+  }
+  lastBackwards = backwards;
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
       int cur = positions[k];
@@ -46,7 +52,11 @@ void arrangePieces(PImage img, int[] positions, int[] states, int pw, int ph) {
       int sx = cx * sw, sy = cy * sh;
       int tx = x * sw, ty = y * sh;
       int dx = abs(tx - sx), dy = abs(ty - sy);
-      float state = states[cur] == 0 ? 0 : constrain((curTime - states[cur]) / moveTime, 0, 1);
+      float timeDiff = constrain(curTime - states[cur], 0, moveTime);
+      if(backwards) {
+        timeDiff -= backwardsDiff;
+      }
+      float state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
       state = smoothStep(state);
       float distance = dx + dy;
       state *= distance;
@@ -67,34 +77,8 @@ void arrangePieces(PImage img, int[] positions, int[] states, int pw, int ph) {
 
 void draw() {
   background(0);
-
-  float zoomAmount = (millis() - startZoom) / zoomTime;
-  pushStyle();
-  if (startZoom > 0 && zoomAmount > 0 && zoomAmount < 1) {
-    float zoom = map(pow(zoomAmount, 2), 0, 1, 1, pieces);
-    pushMatrix();
-    translate(clickX, clickY);
-    scale(zoom, zoom);
-    translate(-clickX, -clickY);
-    tint(255);
-    image(base, 0, 0);
-    arrangePieces(base, positions, prevStates, pieces, pieces);
-    popMatrix();
-
-    pushMatrix();
-    translate(clickX, clickY);
-    scale(zoom / pieces, zoom / pieces);
-    translate(-clickX, -clickY);
-    tint(255, map(pow(zoomAmount, .2), 0, 1, 0, 255));
-    image(base, 0, 0);
-    popMatrix();
-  } 
-  else {
-    image(base, 0, 0);
-    arrangePieces(base, positions, states, pieces, pieces);
-  }
-  popStyle();
-
+  image(base, 0, 0);
+  arrangePieces(base);
   image(target, 256, 0);
 }
 
@@ -107,11 +91,8 @@ void trigger(int x, int y) {
 }
 
 void mousePressed() {
-  clickX = mouseX;
-  clickY = mouseY;
-  startZoom = millis();
-  arrayCopy(states, prevStates);
-  states = new int[states.length];
+  backwards = true;
+  backwardsStart = millis();
 }
 
 void mouseMoved() {
