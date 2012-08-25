@@ -1,13 +1,9 @@
 class MatchPair {
   int src, dst;
-}
-
-float trackingDistance(color a, color b) {
-  float sum =
-    abs(brightness(a) - brightness(b)) +
-    abs(saturation(a) - saturation(b)) +
-    abs(hue(a) - hue(b));
-  return sum / 3;
+  MatchPair(int src, int dst) {
+    this.src = src;
+    this.dst = dst;
+  }
 }
 
 int[] findMosaic(PImage srcImg, PImage dstImg) {
@@ -24,13 +20,18 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
   }
   println("allocating bins: " + tickTimer());
 
+  int[] srcBright = new int[n], dstBright = new int[n];
+  for(int i = 0; i < n; i++) {
+    srcBright[i] = (int) brightness(src[i]);
+    dstBright[i] = (int) brightness(dst[i]);
+  }
+  println("precomputing brightness: " + tickTimer());
+  
   for (int i = 0; i < n; i++) {
+    float curBrightness = srcBright[i];
     for (int j = 0; j < n; j++) {
-      MatchPair cur = new MatchPair();
-      cur.src = i;
-      cur.dst = j;
-      int bin = (int) trackingDistance(src[i], dst[j]);
-      bins[bin].add(cur);
+      int bin = (int) abs(curBrightness - dstBright[j]);
+      bins[bin].add(new MatchPair(i, j));
     }
   }
   println("build bins: " + tickTimer());

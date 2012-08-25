@@ -1,7 +1,6 @@
 /* @pjs preload="base.png, target.png"; */
 
 // before matching, should do histogram normalization
-// binned sorting for matching speed
 // use textured squares instead of get()
 
 PImage base, target;
@@ -18,7 +17,7 @@ int backwardsStart = 0;
 void setup() {
   size(256, 256);
   noSmooth();
-  base = loadImage("base.png");
+  base = loadImage("street.jpg");
   target = loadImage("x.png");
   matchTarget();
 }
@@ -60,7 +59,8 @@ void arrangePieces(PImage img) {
       float state;
       if (debug) {
         state = 1;
-      } else {
+      } 
+      else {
         float timeDiff = constrain(curTime - states[cur], 0, moveTime);
         if (backwards) {
           timeDiff -= backwardsDiff;
