@@ -1,21 +1,24 @@
 class MatchPair implements Comparable {
   int src, dst;
   float distance;
-  
+
   int compareTo(Object obj) {
     MatchPair other = (MatchPair) obj;
-    if(other.distance > distance) {
+    if (other.distance > distance) {
       return -1;
-    } if(other.distance == distance) {
+    } 
+    if (other.distance == distance) {
       return 0;
-    } else {
+    } 
+    else {
       return +1;
     }
   }
 }
 
 float trackingDistance(color a, color b) {
-  return abs(brightness(a) - brightness(b));
+  return
+    abs(brightness(a) - brightness(b));
 }
 
 int[] findMosaic(PImage srcImg, PImage dstImg) {
@@ -24,9 +27,11 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
 
   color[] src = srcImg.pixels, dst = dstImg.pixels;
 
+  tickTimer();
   MatchPair[] all= new MatchPair[n2];
+  println("allocated matrix: " + tickTimer() + " (" + n2 + " elements)");
+  
   int k = 0;
-  println("building distance matrix");
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       all[k] = new MatchPair();
@@ -36,15 +41,17 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
       k++;
     }
   }
+  println("build matrix: " + tickTimer());
 
   // todo: sort by binned distances, Comparable is not js-friendly
   // don't sort after the fact, just bin in advance
-  println("sorting matrix");
   Arrays.sort(all);
+  println("sorted entries: " + tickTimer());
 
   int[] positions = new int[n];
   boolean[] matchedSrc = new boolean[n], matchedDst = new boolean[n];
-  
+  println("allocated matches: " + tickTimer());
+
   // walk through matches in order
   for (int i = 0; i < n2; i++) {
     int srcIndex = all[i].src, dstIndex = all[i].dst;
@@ -55,6 +62,7 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
       positions[dstIndex] = srcIndex;
     }
   }
+  println("matched entries: " + tickTimer());
 
   return positions;
 }
