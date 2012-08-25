@@ -1,3 +1,5 @@
+/* @pjs preload="base.png, target.png"; */
+
 PImage base, target;
 PImage baseSmall, targetSmall;
 
@@ -6,8 +8,13 @@ void setup() {
   noSmooth();
   base = loadImage("base.png");
   target = loadImage("target.png");
+  
   baseSmall = createImage(16, 16, RGB);
   resizeArea(base, baseSmall);
+  targetSmall = createImage(16, 16, RGB);
+  resizeArea(target, targetSmall);
+  
+  println(findMosaic(baseSmall, targetSmall));
 }
 
 void draw() {
@@ -15,5 +22,6 @@ void draw() {
   image(target, 256, 0);
   if(mousePressed) {
     image(baseSmall, 0, 0, 256, 256);
+    image(targetSmall, 256, 0, 256, 256);
   }
 }
