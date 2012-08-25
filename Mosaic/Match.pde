@@ -18,7 +18,9 @@ class MatchPair implements Comparable {
 
 float trackingDistance(color a, color b) {
   return
-    abs(brightness(a) - brightness(b));
+    abs(brightness(a) - brightness(b))/* +
+    abs(saturation(a) - saturation(b)) +
+    abs(hue(a) - hue(b))*/;
 }
 
 int[] findMosaic(PImage srcImg, PImage dstImg) {
