@@ -20,10 +20,10 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
   }
   println("allocating bins: " + tickTimer());
 
-  int[] srcBright = new int[n], dstBright = new int[n];
+  float[] srcBright = new float[n], dstBright = new float[n];
   for(int i = 0; i < n; i++) {
-    srcBright[i] = (int) brightness(src[i]);
-    dstBright[i] = (int) brightness(dst[i]);
+    srcBright[i] = brightness(src[i]);
+    dstBright[i] = brightness(dst[i]);
   }
   println("precomputing brightness: " + tickTimer());
   
@@ -40,6 +40,7 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
   boolean[] matchedSrc = new boolean[n], matchedDst = new boolean[n];
   println("allocated matches: " + tickTimer());
 
+  int lastUsedBin = 0;
   for (int bin = 0; bin < binCount; bin++) {
     ArrayList all = bins[bin];
     for (int i = 0; i < all.size(); i++) {
@@ -50,10 +51,12 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
         matchedSrc[srcIndex] = true;
         matchedDst[dstIndex] = true;
         positions[dstIndex] = srcIndex;
+        lastUsedBin = bin;
       }
     }
   }
   println("matched entries: " + tickTimer());
+  println("last used bin: " + lastUsedBin);
 
   return positions;
 }

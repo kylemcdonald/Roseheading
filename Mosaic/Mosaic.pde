@@ -1,4 +1,17 @@
-/* @pjs preload="base.png, target.png"; */
+/* @pjs preload="street.jpg, prayer.png"; */
+
+/*
+if we know there are only 256 bins
+then it's a process of matching each source pixel to each bin
+then going through those bins and choosing matches
+ArrayList all = new ArrayList[256];
+for (all the source pixels) {
+  put the current pixel in the right place in all
+}
+for (all the dest pixels) {
+  pop the last item off the nearest bin, use that
+}
+*/
 
 // before matching, should do histogram normalization
 // use textured squares instead of get()
@@ -10,7 +23,7 @@ int[] positions, states;
 int pieces = 32;
 float moveTime = 1000;
 
-boolean debug = true;
+boolean debug = false;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
@@ -18,7 +31,7 @@ void setup() {
   size(256, 256);
   noSmooth();
   base = loadImage("street.jpg");
-  target = loadImage("x.png");
+  target = loadImage("prayer.png");
   matchTarget();
 }
 
@@ -29,6 +42,7 @@ float smoothStep(float x) {
 void matchTarget() {
   baseSmall = createImage(pieces, pieces, RGB);
   resizeArea(base, baseSmall);
+  
   targetSmall = createImage(pieces, pieces, RGB);
   resizeArea(target, targetSmall);
 
@@ -39,7 +53,7 @@ void matchTarget() {
 void arrangePieces(PImage img) {
   int w = img.width, h = img.height;
   int pw = pieces, ph = pieces;
-  int sw = w / pw, sh = h / ph;
+  int sw = int(w / pw), sh = int(h / ph);
   int k = 0;
   int curTime = millis();
   float backwardsDiff = curTime - backwardsStart;
@@ -52,7 +66,7 @@ void arrangePieces(PImage img) {
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
       int cur = positions[k];
-      int cy = cur / pw, cx = cur - (cy * pw);
+      int cy = int(cur / pw), cx = cur - (cy * pw);
       int sx = cx * sw, sy = cy * sh;
       int tx = x * sw, ty = y * sh;
       int dx = abs(tx - sx), dy = abs(ty - sy);
