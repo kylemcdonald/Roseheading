@@ -1,13 +1,14 @@
-/* @pjs preload="street.jpg, prayer.png"; */
+/* @pjs preload="prayer.png, x.png"; */
 
 // before matching, should do histogram normalization
 // use textured squares instead of get()
 
 PImage base, target;
 PImage baseSmall, targetSmall;
+PImage[] baseChop;
 
 int[] positions, states;
-int pieces = 64;
+int pieces = 32;
 float moveTime = 1000;
 
 boolean debug = true;
@@ -17,8 +18,11 @@ int backwardsStart = 0;
 void setup() {
   size(256, 256);
   noSmooth();
-  base = loadImage("base.png");
+  base = loadImage("flags.jpg");
   target = loadImage("prayer.png");
+  baseChop = new PImage[pieces * pieces];
+  chop(base, baseChop);
+  matchTarget();
 }
 
 float smoothStep(float x) {
@@ -28,7 +32,7 @@ float smoothStep(float x) {
 void matchTarget() {
   baseSmall = createImage(pieces, pieces, RGB);
   resizeArea(base, baseSmall);
-  
+
   targetSmall = createImage(pieces, pieces, RGB);
   resizeArea(target, targetSmall);
 
@@ -36,11 +40,23 @@ void matchTarget() {
   states = new int[positions.length];
 }
 
+void chop(PImage img, PImage[] chop) {
+  int w = img.width, h = img.height;
+  int pw = pieces, ph = pieces;
+  int sw = int(w / pw), sh = int(h / ph);
+  int i = 0;
+  for (int y = 0; y < ph; y++) {
+    for (int x = 0; x < pw; x++) {
+      chop[i] = img.get(x * sw, y * sh, sw, sh);
+      i++;
+    }
+  }
+}
+
 void arrangePieces(PImage img) {
   int w = img.width, h = img.height;
   int pw = pieces, ph = pieces;
   int sw = int(w / pw), sh = int(h / ph);
-  int k = 0;
   int curTime = millis();
   float backwardsDiff = curTime - backwardsStart;
   if (lastBackwards == true && backwardsDiff > moveTime) {
@@ -49,37 +65,38 @@ void arrangePieces(PImage img) {
     states = new int[states.length];
   }
   lastBackwards = backwards;
+  int k = 0;
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
       int cur = positions[k];
       int cy = int(cur / pw), cx = cur - (cy * pw);
       int sx = cx * sw, sy = cy * sh;
       int tx = x * sw, ty = y * sh;
-      int dx = abs(tx - sx), dy = abs(ty - sy);
-      float state;
+      float ax, ay;
       if (debug) {
-        state = 1;
+        ax = tx;
+        ay = ty;
       } 
       else {
         float timeDiff = constrain(curTime - states[cur], 0, moveTime);
         if (backwards) {
           timeDiff -= backwardsDiff;
         }
-        state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
+        float state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
         state = smoothStep(state);
+        int dx = int(abs(tx - sx)), dy = int(abs(ty - sy));
+        state *= (dx + dy);
+        if (dx > dy) {
+          ax = dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx);
+          ay = dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy);
+        } 
+        else {
+          ax = dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx);
+          ay = dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy);
+        }
       }
-      float distance = dx + dy;
-      state *= distance;
-      float ax, ay;
-      if (dx > dy) {
-        ax = lerp(sx, tx, constrain(state, 0, dx) / dx);
-        ay = lerp(sy, ty, constrain(state - dx, 0, dy) / dy);
-      } 
-      else {
-        ax = lerp(sx, tx, constrain(state - dy, 0, dx) / dx);
-        ay = lerp(sy, ty, constrain(state, 0, dy) / dy);
-      }
-      image(img.get(sx, sy, sw, sh), ax, ay);
+      image(baseChop[cur], ax, ay);
+      //image(img.get(sx, sy, sw, sh), ax, ay);
       k++;
     }
   }
@@ -87,14 +104,10 @@ void arrangePieces(PImage img) {
 
 void draw() {
   tickTimer();
-  matchTarget();
-  println("matchTarget: " + tickTimer());
-  
   background(0);
   image(base, 0, 0);
   arrangePieces(base);
   image(target, 256, 0);
-  println("drawing: " + tickTimer());
 }
 
 
@@ -108,6 +121,12 @@ void trigger(int x, int y) {
 void mousePressed() {
   backwards = true;
   backwardsStart = millis();
+}
+
+void keyPressed() {
+  if (key == 's') {
+    saveFrame("screen-###.png");
+  }
 }
 
 void mouseMoved() {
