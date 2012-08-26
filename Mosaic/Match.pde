@@ -10,26 +10,6 @@ void flatten(ArrayList[] nested, int[] flat) {
   }
 }
 
-float distance(PImage a, PImage b) {
-  int[] ap = a.pixels, bp = b.pixels;
-  int n = ap.length;
-  float sum = 0;
-  for(int i = 0; i < n; i++) {
-    sum +=
-      abs(red(ap[i]) - red(bp[i])) +
-      abs(green(ap[i]) - green(bp[i])) +
-      abs(blue(ap[i]) - blue(bp[i]));
-  }
-  return sum;
-}
-
-float distance(int baseIndex, int targetIndex) {
-  return distance(baseChop[baseIndex], targetChop[targetIndex]); 
-}
-
-boolean refine = false;
-int refineDistance = 8;
-
 int binCount = 256;
 int[] findMosaic(PImage srcImg, PImage dstImg) {
   int n = srcImg.width * srcImg.height;
@@ -49,35 +29,9 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
   int[] flatDst = new int[n];
   flatten(srcBins, flatSrc);
   flatten(dstBins, flatDst);
-
-  if (!refine) {
-    for (int i = 0; i < n; i++) {
-      positions[flatDst[i]] = flatSrc[i];
-    }
-  } else {
-    boolean[] taken = new boolean[n];
-    for (int i = 0; i < n; i++) {
-      int srcIndex = flatSrc[i];
-      float best = MAX_FLOAT;
-      int bestIndex = 0;
-      int left = max(0, i - refineDistance);
-      int right = min(i + refineDistance, n);
-      for (int j = left; j < right; j++) {
-        if (i != j && !taken[j]) {
-          int dstIndex = flatDst[j];
-          float cur = distance(srcIndex, dstIndex);
-          if (cur < best) {
-            best = cur;
-            bestIndex = j;
-          }
-        }
-      }
-      taken[bestIndex] = true;
-      int dstIndex = flatDst[bestIndex];
-      positions[dstIndex] = srcIndex;
-    }
+  for (int i = 0; i < n; i++) {
+    positions[flatDst[i]] = flatSrc[i];
   }
-  
   return positions;
 }
 

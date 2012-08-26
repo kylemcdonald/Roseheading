@@ -1,29 +1,29 @@
 /* @pjs preload="prayer.png, x.png"; */
 
-// before matching, should do histogram normalization
-// use textured squares instead of get()
+// implement code generator
+// glitchalike unallocated texture filter
+// jpg noise filter
+// generate unicode characters to PGraphics
 
 PImage base, target;
 PImage baseSmall, targetSmall;
-PImage[] baseChop, targetChop;
+PImage[] baseChop;
 
 int[] positions, states;
 int pieces = 32;
 float moveTime = 1000;
 
-boolean debug = true;
+boolean debug = false;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
 void setup() {
   size(256, 256);
   noSmooth();
-  base = loadImage("street.jpg");
-  target = loadImage("prayer.png");
+  base = loadImage("base.png");
+  target = loadImage("x.png");
   baseChop = new PImage[pieces * pieces];
-  targetChop = new PImage[pieces * pieces];
   chop(base, baseChop);
-  chop(target, targetChop);
   matchTarget();
 }
 

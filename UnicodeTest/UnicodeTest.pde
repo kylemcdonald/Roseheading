@@ -1,0 +1,13 @@
+size(200, 200);
+background(102);
+PFont font = loadFont("Arial");
+textFont(font, 32);
+translate(30, 0);
+fill(0);
+text("一 ichi", 0, 60);
+fill(51);
+text("二 ni", 0, 95);
+fill(204);
+text("三 san", 0, 130);
+fill(255);
+text("氏 shi", 0, 165);
