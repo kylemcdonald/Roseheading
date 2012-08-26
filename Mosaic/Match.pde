@@ -1,8 +1,11 @@
-class MatchPair {
-  int src, dst;
-  MatchPair(int src, int dst) {
-    this.src = src;
-    this.dst = dst;
+void flatten(ArrayList[] nested, int[] flat) {
+  int k = 0;
+  for(int i = 0; i < nested.length; i++) {
+    ArrayList cur = nested[i];
+    for(int j = 0; j < cur.size(); j++) {
+      flat[k] = (Integer) cur.get(j);
+      k++;
+    }
   }
 }
 
@@ -14,49 +17,32 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
 
   tickTimer();  
   int binCount = 256;
-  ArrayList[] bins = new ArrayList[binCount];
+  ArrayList[] srcBins = new ArrayList[binCount];
+  ArrayList[] dstBins = new ArrayList[binCount];
   for (int i = 0; i < binCount; i++) {
-    bins[i] = new ArrayList();
+    srcBins[i] = new ArrayList();
+    dstBins[i] = new ArrayList();
   }
   println("allocating bins: " + tickTimer());
 
-  float[] srcBright = new float[n], dstBright = new float[n];
   for(int i = 0; i < n; i++) {
-    srcBright[i] = brightness(src[i]);
-    dstBright[i] = brightness(dst[i]);
+    int srcBright = int(brightness(src[i]));
+    int dstBright = int(brightness(dst[i]));
+    srcBins[srcBright].add(i);
+    dstBins[dstBright].add(i);
   }
-  println("precomputing brightness: " + tickTimer());
+  println("filling bins: " + tickTimer());
   
-  for (int i = 0; i < n; i++) {
-    float curBrightness = srcBright[i];
-    for (int j = 0; j < n; j++) {
-      int bin = (int) abs(curBrightness - dstBright[j]);
-      bins[bin].add(new MatchPair(i, j));
-    }
-  }
-  println("build bins: " + tickTimer());
-
   int[] positions = new int[n];
-  boolean[] matchedSrc = new boolean[n], matchedDst = new boolean[n];
-  println("allocated matches: " + tickTimer());
-
-  int lastUsedBin = 0;
-  for (int bin = 0; bin < binCount; bin++) {
-    ArrayList all = bins[bin];
-    for (int i = 0; i < all.size(); i++) {
-      MatchPair cur = (MatchPair) all.get(i);
-      int srcIndex = cur.src, dstIndex = cur.dst;
-      // only use match if both objects are unmatched
-      if (!matchedSrc[srcIndex] && !matchedDst[dstIndex]) {
-        matchedSrc[srcIndex] = true;
-        matchedDst[dstIndex] = true;
-        positions[dstIndex] = srcIndex;
-        lastUsedBin = bin;
-      }
-    }
+  int[] flatSrc = new int[n];
+  int[] flatDst = new int[n];
+  flatten(srcBins, flatSrc);
+  flatten(dstBins, flatDst);
+  for(int i = 0; i < n; i++) {
+    positions[flatDst[i]] = flatSrc[i];
   }
+
   println("matched entries: " + tickTimer());
-  println("last used bin: " + lastUsedBin);
 
   return positions;
 }

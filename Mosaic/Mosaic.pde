@@ -1,18 +1,5 @@
 /* @pjs preload="street.jpg, prayer.png"; */
 
-/*
-if we know there are only 256 bins
-then it's a process of matching each source pixel to each bin
-then going through those bins and choosing matches
-ArrayList all = new ArrayList[256];
-for (all the source pixels) {
-  put the current pixel in the right place in all
-}
-for (all the dest pixels) {
-  pop the last item off the nearest bin, use that
-}
-*/
-
 // before matching, should do histogram normalization
 // use textured squares instead of get()
 
