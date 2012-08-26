@@ -5,7 +5,7 @@
 
 PImage base, target;
 PImage baseSmall, targetSmall;
-PImage[] baseChop;
+PImage[] baseChop, targetChop;
 
 int[] positions, states;
 int pieces = 32;
@@ -18,10 +18,12 @@ int backwardsStart = 0;
 void setup() {
   size(256, 256);
   noSmooth();
-  base = loadImage("flags.jpg");
+  base = loadImage("street.jpg");
   target = loadImage("prayer.png");
   baseChop = new PImage[pieces * pieces];
+  targetChop = new PImage[pieces * pieces];
   chop(base, baseChop);
+  chop(target, targetChop);
   matchTarget();
 }
 
