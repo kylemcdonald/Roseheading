@@ -1,13 +1,19 @@
-size(200, 200);
-background(102);
+int fontSize = 128;
 PFont font = loadFont("Arial");
-textFont(font, 32);
-translate(30, 0);
-fill(0);
-text("一 ichi", 0, 60);
-fill(51);
-text("二 ni", 0, 95);
-fill(204);
-text("三 san", 0, 130);
-fill(255);
-text("氏 shi", 0, 165);
+
+void setup() {
+  size(512, 512);
+  textFont(font, fontSize);
+  textAlign(LEFT, TOP);
+}
+void draw() {
+  background(0);
+  int w = width / fontSize, h = height / fontSize;
+  //translate(hspace / 2, vspace / 2);
+  for(int x = 0; x < w; x++) {
+    for(int y = 0; y < h; y++) {
+      text(char(pow(random(0, 1), 10) * 4 * 4096), x * fontSize, y * fontSize);
+    }
+  }
+}
+
