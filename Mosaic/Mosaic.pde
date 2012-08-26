@@ -7,19 +7,18 @@ PImage base, target;
 PImage baseSmall, targetSmall;
 
 int[] positions, states;
-int pieces = 32;
+int pieces = 64;
 float moveTime = 1000;
 
-boolean debug = false;
+boolean debug = true;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
 void setup() {
   size(256, 256);
   noSmooth();
-  base = loadImage("street.jpg");
+  base = loadImage("base.png");
   target = loadImage("prayer.png");
-  matchTarget();
 }
 
 float smoothStep(float x) {
@@ -87,10 +86,15 @@ void arrangePieces(PImage img) {
 }
 
 void draw() {
+  tickTimer();
+  matchTarget();
+  println("matchTarget: " + tickTimer());
+  
   background(0);
   image(base, 0, 0);
   arrangePieces(base);
   image(target, 256, 0);
+  println("drawing: " + tickTimer());
 }
 
 
