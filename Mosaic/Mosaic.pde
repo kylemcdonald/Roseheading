@@ -1,4 +1,4 @@
-/* @pjs preload="prayer.png, x.png"; */
+/* @pjs preload="base.png, target.png"; */
 
 // implement code generator
 // glitchalike unallocated texture filter
@@ -10,19 +10,23 @@ PImage baseSmall, targetSmall;
 PImage[] baseChop;
 
 int[] positions, states;
-int pieces = 32;
+int pieceSize = 10;
+int pw, ph;
 float moveTime = 1000;
+int moveRadius = 16; // blocks
 
 boolean debug = false;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
 void setup() {
-  size(256, 256);
+  size(950, 540);
   noSmooth();
+  pw = int(width / pieceSize);
+  ph = int(height / pieceSize);
   base = loadImage("base.png");
-  target = loadImage("x.png");
-  baseChop = new PImage[pieces * pieces];
+  target = loadImage("target.png");
+  baseChop = new PImage[pw * ph];
   chop(base, baseChop);
   matchTarget();
 }
@@ -32,19 +36,18 @@ float smoothStep(float x) {
 }
 
 void matchTarget() {
-  baseSmall = createImage(pieces, pieces, RGB);
+  baseSmall = createImage(pw, ph, RGB);
   resizeArea(base, baseSmall);
 
-  targetSmall = createImage(pieces, pieces, RGB);
+  targetSmall = createImage(pw, ph, RGB);
   resizeArea(target, targetSmall);
-
+  
   positions = findMosaic(baseSmall, targetSmall);
   states = new int[positions.length];
 }
 
 void chop(PImage img, PImage[] chop) {
   int w = img.width, h = img.height;
-  int pw = pieces, ph = pieces;
   int sw = int(w / pw), sh = int(h / ph);
   int i = 0;
   for (int y = 0; y < ph; y++) {
@@ -57,7 +60,6 @@ void chop(PImage img, PImage[] chop) {
 
 void arrangePieces(PImage img) {
   int w = img.width, h = img.height;
-  int pw = pieces, ph = pieces;
   int sw = int(w / pw), sh = int(h / ph);
   int curTime = millis();
   float backwardsDiff = curTime - backwardsStart;
@@ -109,12 +111,12 @@ void draw() {
   background(0);
   image(base, 0, 0);
   arrangePieces(base);
-  image(target, 256, 0);
+  //image(target, 256, 0);
 }
 
 
 void trigger(int x, int y) {
-  int i = y * pieces + x;
+  int i = y * pw + x;
   if (states[i] == 0) {
     states[i] = millis();
   }
@@ -132,12 +134,11 @@ void keyPressed() {
 }
 
 void mouseMoved() {
-  int pw = base.width / pieces, ph = base.height / pieces;
-  int x = mouseX / pw, y = mouseY / ph;
-  if (x >= 0 && y >= 0 && x < pieces && y < pieces) {
-    for (int i = 0; i < pieces; i++) {
-      for (int j = 0; j < pieces; j++) {
-        if (dist(i, j, x, y) < 8) {
+  int x = mouseX / pieceSize, y = mouseY / pieceSize;
+  if (x >= 0 && y >= 0 && x < pw && y < ph) {
+    for (int i = 0; i < pw; i++) {
+      for (int j = 0; j < ph; j++) {
+        if (dist(i, j, x, y) < moveRadius) {
           trigger(i, j);
         }
       }

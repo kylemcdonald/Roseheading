@@ -26,7 +26,7 @@ color mean(PImage src, int x, int y, int w, int h) {
 void resizeArea(PImage src, PImage dst) {
   int sw = src.width, sh = src.height;
   int dw = dst.width, dh = dst.height;
-  int w = sw / dw, h = sw / dh;
+  int w = sw / dw, h = sh / dh;
   for(int y = 0; y < dh; y++) {
     for(int x = 0; x < dw; x++) {
       dst.set(x, y, mean(src, x * w, y * h, w, h));
