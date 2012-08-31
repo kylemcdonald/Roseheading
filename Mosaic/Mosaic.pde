@@ -8,7 +8,6 @@
 PImage base, target;
 PImage baseSmall, targetSmall;
 PImage[] baseChop;
-PImage result;
 
 int[] positions, states;
 int pieceSize = 10;
@@ -35,7 +34,6 @@ void setup() {
   baseChop = new PImage[pw * ph];
   chop(base, baseChop);
   matchTarget();
-  result = createImage(width, height, RGB);
 }
 
 float smoothStep(float x) {
@@ -79,8 +77,6 @@ void arrangePieces(PImage img) {
   }
   lastBackwards = backwards;
   
-  int[] indices = new int[width * height];
-  
   int k = 0;
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
@@ -112,40 +108,17 @@ void arrangePieces(PImage img) {
         }
       }
 
-      int i = sy * width + sx, j = ay * width + ax;
-      int n = i + sh * width;
-      while (i < n) {
-        indices[j] = i;
-        i += width;
-        j += width;
-      }
-
       //rect(ax, ay, sw, sh);
-      //image(baseChop[cur], ax, ay);
+      image(baseChop[cur], ax, ay);
       //image(img.get(sx, sy, sw, sh), ax, ay);
 
       k++;
     }
   }
-
-  result.loadPixels();
-  int n = width * height;
-  int j = 0;
-  for(int i = 0; i < n; ++i) {
-    if(indices[i] > 0) j = indices[i];
-    if(j >= n) j = n - 1;
-    result.pixels[i] = img.pixels[j];
-    ++j;
-  }
-  result.updatePixels();
 }
 
 void draw() {
-  //image(base, 0, 0);
-  noStroke();
   arrangePieces(base);
-  //image(target, 256, 0);
-  image(result, 0, 0);
 
   fill(0);
   rect(5, 5, 100, 25);
