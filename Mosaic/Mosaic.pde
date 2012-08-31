@@ -8,20 +8,26 @@
 PImage base, target;
 PImage baseSmall, targetSmall;
 PImage[] baseChop;
+PImage result;
 
 int[] positions, states;
 int pieceSize = 10;
 int pw, ph;
-float moveTime = 1000;
+float moveTime = 2000;
 int moveRadius = 16; // blocks
 
 boolean debug = false;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
+PFont font = createFont("Arial", 10, false);
+
 void setup() {
   size(950, 540);
-  noSmooth();
+  noSmooth();  
+  textFont(font, 10);
+  textAlign(LEFT, TOP);
+
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
   base = loadImage("base.png");
@@ -29,6 +35,7 @@ void setup() {
   baseChop = new PImage[pw * ph];
   chop(base, baseChop);
   matchTarget();
+  result = createImage(width, height, RGB);
 }
 
 float smoothStep(float x) {
@@ -41,7 +48,7 @@ void matchTarget() {
 
   targetSmall = createImage(pw, ph, RGB);
   resizeArea(target, targetSmall);
-  
+
   positions = findMosaic(baseSmall, targetSmall);
   states = new int[positions.length];
 }
@@ -59,8 +66,10 @@ void chop(PImage img, PImage[] chop) {
 }
 
 void arrangePieces(PImage img) {
+  img.loadPixels();
+
   int w = img.width, h = img.height;
-  int sw = int(w / pw), sh = int(h / ph);
+  int sw = floor(w / pw), sh = floor(h / ph);
   int curTime = millis();
   float backwardsDiff = curTime - backwardsStart;
   if (lastBackwards == true && backwardsDiff > moveTime) {
@@ -69,14 +78,17 @@ void arrangePieces(PImage img) {
     states = new int[states.length];
   }
   lastBackwards = backwards;
+  
+  int[] indices = new int[width * height];
+  
   int k = 0;
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
       int cur = positions[k];
-      int cy = int(cur / pw), cx = cur - (cy * pw);
+      int cy = floor(cur / pw), cx = cur - (cy * pw);
       int sx = cx * sw, sy = cy * sh;
       int tx = x * sw, ty = y * sh;
-      float ax, ay;
+      int ax, ay;
       if (debug) {
         ax = tx;
         ay = ty;
@@ -91,29 +103,55 @@ void arrangePieces(PImage img) {
         int dx = int(abs(tx - sx)), dy = int(abs(ty - sy));
         state *= (dx + dy);
         if (dx > dy) {
-          ax = dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx);
-          ay = dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy);
+          ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx));
+          ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy));
         } 
         else {
-          ax = dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx);
-          ay = dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy);
+          ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
+          ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
         }
       }
-      image(baseChop[cur], ax, ay);
+
+      int i = sy * width + sx, j = ay * width + ax;
+      int n = i + sh * width;
+      while (i < n) {
+        indices[j] = i;
+        i += width;
+        j += width;
+      }
+
+      //rect(ax, ay, sw, sh);
+      //image(baseChop[cur], ax, ay);
       //image(img.get(sx, sy, sw, sh), ax, ay);
+
       k++;
     }
   }
+
+  result.loadPixels();
+  int n = width * height;
+  int j = 0;
+  for(int i = 0; i < n; ++i) {
+    if(indices[i] > 0) j = indices[i];
+    if(j >= n) j = n - 1;
+    result.pixels[i] = img.pixels[j];
+    ++j;
+  }
+  result.updatePixels();
 }
 
 void draw() {
-  tickTimer();
-  background(0);
-  image(base, 0, 0);
+  //image(base, 0, 0);
+  noStroke();
   arrangePieces(base);
   //image(target, 256, 0);
-}
+  image(result, 0, 0);
 
+  fill(0);
+  rect(5, 5, 100, 25);
+  fill(255);
+  text(frameCount + " / " + int(frameRate), 10, 10);
+}
 
 void trigger(int x, int y) {
   int i = y * pw + x;
@@ -131,6 +169,11 @@ void keyPressed() {
   if (key == 's') {
     saveFrame("screen-###.png");
   }
+}
+
+// for mobile apps
+void mouseDragged() {
+  mouseMoved();
 }
 
 void mouseMoved() {
