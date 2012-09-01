@@ -7,7 +7,7 @@ void setup() {
 }
 
 void draw() {
-  buildMap(pg, 10);
+  buildMap(pg, 255);
   image(pg, 0, 0);
 }
 
@@ -20,23 +20,28 @@ void buildMap(PGraphics pg, int levels) {
   pg.beginDraw();
   pg.noSmooth();
   pg.background(0);
-  //pg.noStroke();
+  pg.noStroke();
+  int i = 0;
   float py = 0, y = 0;
   while(py < height) {
-    pg.beginShape(TRIANGLE_STRIP);
     float px0 = 0, px1 = 0;
     float x0 = 0, x1 = 0;
+    y += random(miny, maxy);
     while(px0 < width || px1 < width) {
-      pg.vertex(x0, py);
-      pg.vertex(x1, y);
       px0 = x0;
       px1 = x1;
       x0 += random(minx, maxx);
       x1 += random(minx, maxx);
+      
+      pg.fill(i % levels);
+      pg.triangle(px0, py, px1, y, x0, py);
+      i++;
+      
+      pg.fill(i % levels);  
+      pg.triangle(px1, y, x0, py, x1, y);
+      i++;
     }
-    pg.endShape();
     py = y;
-    y += random(miny, maxy);
   }
   pg.endDraw();
 }
