@@ -10,11 +10,10 @@
  "street.png"; */
 
 /*
- first draw colored regions that act as instructions
- do this into an image choice buffer and a blend mode buffer
- and a scaling buffer?
- do this multiple times (2x, 3x)
- same idea as the shader code from infinite fill
+ algorithm:
+ 1 draw base images four times
+ 2 blend together with random blend functions and 50% opacity
+ 3 take final result and saturation all colors
  */
 
 String[] files = {
@@ -30,6 +29,7 @@ String[] files = {
 };
 
 int[] modes = {
+  //ADD,SUBTRACT};
   ADD, 
   SUBTRACT, 
   DARKEST, 
@@ -46,10 +46,10 @@ int[] modes = {
 };
 
 PImage[] images;
-PGraphics regionMap;
+PGraphics regionMap, modeMap;
 
 void setup() {
-  frameRate(.5);
+  //frameRate(.5);
   size(950, 540);
   //size(512, 512);
   noSmooth();
@@ -58,6 +58,7 @@ void setup() {
     images[i] = loadImage(files[i]);
   }
   regionMap = createGraphics(width, height, JAVA2D);
+  modeMap = createGraphics(width, height, JAVA2D);
 }
 
 void keyPressed() {
@@ -66,39 +67,16 @@ void keyPressed() {
   }
 }
 
-void draw() {
-  background(128);
-  //randomSeed(mouseX);
+void draw() {  
+  randomSeed(mouseX);
+  random(1); // some bug with the RNG makes the first number similar
 
-  buildMap(regionMap, images.length);
-  regionMap.loadPixels();
-
-  loadPixels();
-  int n = width * height;
-  int m = 512 * 512;
-  int j = 0;
-  int prevChoice = 0;
-  boolean verticalSync = true;
-  boolean horizontalSync = true;
-  boolean firstLineOnly = false;
-  for (int i = 0; i < n; ++i) {
-    int curChoice = regionMap.pixels[i] & 0xff;
-    pixels[i] = images[curChoice].pixels[j];
-    ++j;
-    if (curChoice != prevChoice) {
-      if (verticalSync) {
-        j = (i / width) * 512;
-      }
-      if (horizontalSync) {
-        j += i % width;
-      }
-      if (firstLineOnly) {
-        j = 0;
-      }
-    }
-    j %= m;
-    prevChoice = curChoice;
+  image(createBase(255), 0, 0);
+  for(int i = 0; i < 4; i++) {
+    PImage cur = createBase(128);
+    int curMode = randomExclusive(modes.length);
+    blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
-  updatePixels();
+  saturate();
 }
 
