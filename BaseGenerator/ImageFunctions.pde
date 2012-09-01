@@ -25,7 +25,7 @@ void saturate() {
   int n = width * height;
   loadPixels();
   for (int i = 0; i < n; i++) {
-    pixels[i] = saturate(pixels[i], .5);
+    pixels[i] = saturate(pixels[i], 1);
   }
   updatePixels();
 }

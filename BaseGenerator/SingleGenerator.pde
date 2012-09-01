@@ -1,8 +1,8 @@
 PImage createBase(int alphaValue) {
   PImage base = createImage(width, height, ARGB);
   
-  float regionScale = random(128, 512), modeScale = random(32, 512);
-  buildMap(regionMap, images.length, int(regionScale / 2), int(regionScale));
+  float regionScale = random(128, 1024), modeScale = 32;
+  buildMap(regionMap, images.length, int(regionScale), int(regionScale));
   regionMap.loadPixels();
   buildMap(modeMap, 255, int(modeScale / 2), int(modeScale));
   modeMap.loadPixels();
