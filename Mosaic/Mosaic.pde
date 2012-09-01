@@ -29,7 +29,7 @@ void setup() {
 
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
-  base = loadImage("base.png");
+  base = loadImage("oceanic.png");
   target = loadImage("target.png");
   baseChop = new PImage[pw * ph];
   chop(base, baseChop);
