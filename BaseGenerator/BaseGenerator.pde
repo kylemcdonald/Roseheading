@@ -77,13 +77,18 @@ void draw() {
   int n = width * height;
   int m = 512 * 512;
   int j = 0;
+  int prev = 0, prevChoice = 0;
   for(int i = 0; i < n; ++i) {
-    int choice = regionMap.pixels[i] & 0xff;
-    pixels[i] = images[choice].pixels[j];
-    ++j;
-    if(j >= m) {
+    int curChoice = regionMap.pixels[i] & 0xff;
+    pixels[i] = images[curChoice].pixels[j];
+    int cur = (pixels[i] & 0xff);
+    j += (cur - prev);
+    prev = cur;
+    if(j < 0 || j >= m || curChoice != prevChoice) {
       j = 0;
     }
+    prev = cur;
+    prevChoice = curChoice;
   }
   updatePixels();
 }
