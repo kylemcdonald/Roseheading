@@ -1,3 +1,7 @@
+boolean b() {
+  return random(2) > 1;
+}
+
 int randomExclusive(int n) {
   return int(min(random(n), n - 1));
 }
@@ -22,11 +26,17 @@ void buildMap(PGraphics pg, int levels, int minx, int maxx, int miny, int maxy) 
       x0 += random(minx, maxx);
       x1 += random(minx, maxx);
       
-      pg.fill(randomExclusive(levels));
-      pg.triangle(px0, py, px1, y, x0, py);
-      
-      pg.fill(randomExclusive(levels));  
-      pg.triangle(px1, y, x0, py, x1, y);
+      if(b()) {
+        pg.fill(randomExclusive(levels));
+        pg.triangle(px0, py, px0, y, x0, py);
+        pg.fill(randomExclusive(levels));
+        pg.triangle(x0, py, x0, y, px0, y);
+      } else {
+        pg.fill(randomExclusive(levels));
+        pg.triangle(px0, py, px0, y, x0, y);
+        pg.fill(randomExclusive(levels));
+        pg.triangle(x0, py, x0, y, px0, py);
+      }
     }
     py = y;
   }

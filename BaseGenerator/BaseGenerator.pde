@@ -68,6 +68,8 @@ void keyPressed() {
 }
 
 void draw() {  
+  background(0);
+  
   randomSeed(mouseX);
   random(1); // some bug with the RNG makes the first number similar
 
