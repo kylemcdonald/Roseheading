@@ -1,7 +1,7 @@
 PGraphics pg;
 
 void setup() {
-  frameRate(1);
+  frameRate(2);
   size(950, 540);
   pg = createGraphics(width, height, JAVA2D);
 }
@@ -16,28 +16,27 @@ boolean b() {
 }
 
 void buildMap(PGraphics pg, int levels) {
-  int minRange = 100, maxRange = 1000;
+  int minx = 32, maxx = 128, miny = 32, maxy = 128;
   pg.beginDraw();
+  pg.noSmooth();
   pg.background(0);
-  pg.noStroke();
-  for(int i = 0; i < levels; i++) {
-    float curRange = map(i, 0, levels, maxRange, minRange);
-    pg.fill(i);
-    pg.beginShape(TRIANGLES);
-    if(b()) {
-      float x0 = random(width);
-      pg.vertex(x0, 0);
-      pg.vertex(x0, height);
-      float x1 = x0 + (b() ? 1 : -1) * random(curRange);
-      pg.vertex(x1, b() ? 0 : height);
-    } else {
-      float y0 = random(height);
-      pg.vertex(0, y0);
-      pg.vertex(width, y0);
-      float y1 = y0 + (b() ? 1 : -1) * random(curRange);
-      pg.vertex(b() ? 0 : width, y1);
+  //pg.noStroke();
+  float py = 0, y = 0;
+  while(py < height) {
+    pg.beginShape(TRIANGLE_STRIP);
+    float px0 = 0, px1 = 0;
+    float x0 = 0, x1 = 0;
+    while(px0 < width || px1 < width) {
+      pg.vertex(x0, py);
+      pg.vertex(x1, y);
+      px0 = x0;
+      px1 = x1;
+      x0 += random(minx, maxx);
+      x1 += random(minx, maxx);
     }
     pg.endShape();
+    py = y;
+    y += random(miny, maxy);
   }
   pg.endDraw();
 }
