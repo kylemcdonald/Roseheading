@@ -18,16 +18,17 @@ void buildMap(PGraphics pg, int levels, int side, int ox, int oy) {
     while(px < width) {
       px = x;
       x += side;
+      float off = b() ? 0 : random(side / 4);
       if(b()) {
         pg.fill(randomExclusive(levels));
-        pg.triangle(px, py, px, y, x, py);
+        pg.triangle(px, py, px - off, y + off, x, py);
         pg.fill(randomExclusive(levels));
-        pg.triangle(x, py, x, y, px, y);
+        pg.triangle(x, py, x, y, px - off, y + off);
       } else {
         pg.fill(randomExclusive(levels));
-        pg.triangle(px, py, px, y, x, y);
+        pg.triangle(px - off, py - off, px, y, x, y);
         pg.fill(randomExclusive(levels));
-        pg.triangle(x, py, x, y, px, py);
+        pg.triangle(x, py, x, y, px - off, py - off);
       }
     }
     py = y;

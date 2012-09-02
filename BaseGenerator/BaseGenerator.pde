@@ -80,6 +80,6 @@ void draw() {
     int curMode = randomExclusive(modes.length);
     blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
-  saturate(.5);
+  saturate(1);
 }
 

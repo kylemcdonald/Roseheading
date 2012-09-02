@@ -11,14 +11,25 @@ color saturate(color c, float pump) {
   float pv = ((1 - saturationNorm) * bright);
   float qv = ((1 - saturationNorm * hueSixRemainder) * bright);
   float tv = ((1 - saturationNorm * (1 - hueSixRemainder)) * bright);
+  color out;
   switch(hueSixCategory) {
-    case 0: return color(bright, tv, pv);
-    case 1: return color(qv, bright, pv);
-    case 2: return color(pv, bright, tv);
-    case 3: return color(pv, qv, bright);
-    case 4: return color(tv, pv, bright);
-    default: return color(bright, pv, qv);
+    case 0: out = color(bright, tv, pv); break; // r
+    case 1: out = color(qv, bright, pv); break; // g
+    case 2: out = color(pv, bright, tv); break; // g
+    case 3: out = color(pv, qv, bright); break; // b
+    case 4: out = color(tv, pv, bright); break; // b
+    default: out = color(bright, pv, qv); break; // r
   }
+  return out;
+  /*
+  switch(hueSixCategory) {
+    case 0: out = color(bright, 0, 0); break; // r
+    case 1: out = color(255, bright, 0); break; // g
+    case 2: out = color(0, bright, 0); break; // g
+    case 3: out = color(255, 0, bright); break; // b
+    case 4: out = color(0, 0, bright); break; // b
+    default: out = color(bright, 255, 0); break; // r
+  }*/
 }
 
 void saturate(float amt) {
