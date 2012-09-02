@@ -6,11 +6,12 @@ int randomExclusive(int n) {
   return int(min(random(n), n - 1));
 }
 
-void buildMap(PGraphics pg, int levels, int side, int ox, int oy) {
+void buildMap(PGraphics pg, int levels, int side) {
   pg.beginDraw();
   pg.noSmooth();
   pg.noStroke();
   pg.background(0);
+  int ox = int(-random(side)), oy = int(-random(side));
   int py = oy, y = oy;
   while(py < height) {
     int px = ox, x = ox;
@@ -34,4 +35,5 @@ void buildMap(PGraphics pg, int levels, int side, int ox, int oy) {
     py = y;
   }
   pg.endDraw();
+  pg.loadPixels();
 }

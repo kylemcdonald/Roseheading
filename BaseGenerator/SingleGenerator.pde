@@ -2,10 +2,8 @@ PImage createBase(int alphaValue) {
   PImage base = createImage(width, height, ARGB);
   
   float regionScale = random(32, 1024), modeScale = random(16, 64);
-  buildMap(regionMap, images.length, int(regionScale), int(-random(regionScale)), int(-random(regionScale)));
-  regionMap.loadPixels();
-  buildMap(modeMap, 255, int(modeScale), int(-random(modeScale)), int(-random(modeScale)));
-  modeMap.loadPixels();
+  buildMap(regionMap, images.length, int(regionScale));
+  buildMap(modeMap, 255, int(modeScale));
 
   int alphaMask = color(255, alphaValue);
   int m = 512 * 512;

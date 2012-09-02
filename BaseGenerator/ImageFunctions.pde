@@ -1,42 +1,44 @@
-color saturate(color c, float pump) {
+color saturate(color c, int mode) {
   float curSaturation = saturation(c);
   if(curSaturation == 0) {
     return c;
   }
   float bright = brightness(c);
-  float hueSix = hue(c) * 6. / 255;
+  float hueSix = hue(c) * 6 / 255;
   int hueSixCategory = int(hueSix);
-  float hueSixRemainder = hueSix - hueSixCategory;
-  float saturationNorm = min(1, curSaturation / 255 + pump);
-  float pv = ((1 - saturationNorm) * bright);
-  float qv = ((1 - saturationNorm * hueSixRemainder) * bright);
-  float tv = ((1 - saturationNorm * (1 - hueSixRemainder)) * bright);
-  color out;
-  switch(hueSixCategory) {
-    case 0: out = color(bright, tv, pv); break; // r
-    case 1: out = color(qv, bright, pv); break; // g
-    case 2: out = color(pv, bright, tv); break; // g
-    case 3: out = color(pv, qv, bright); break; // b
-    case 4: out = color(tv, pv, bright); break; // b
-    default: out = color(bright, pv, qv); break; // r
+  if(mode < 10) {
+    float hueSixRemainder = hueSix - hueSixCategory;
+    float saturationNorm = mode / 10.;
+    float pv = ((1 - saturationNorm) * bright);
+    float qv = ((1 - saturationNorm * hueSixRemainder) * bright);
+    float tv = ((1 - saturationNorm * (1 - hueSixRemainder)) * bright);
+    switch(hueSixCategory) {
+      case 0: return color(bright, tv, pv); // r
+      case 1: return color(qv, bright, pv); // g
+      case 2: return color(pv, bright, tv); // g
+      case 3: return color(pv, qv, bright); // b
+      case 4: return color(tv, pv, bright); // b
+      default: return color(bright, pv, qv); // r
+    }
+  } else {
+    switch(hueSixCategory) {
+      case 0: return color(bright, 0, 0); // r
+      case 1: return color(255, bright, 0); // g
+      case 2: return color(0, bright, 0); // g
+      case 3: return color(255, 0, bright); // b
+      case 4: return color(0, 0, bright); // b
+      default: return color(bright, 255, 0); // r
+    }
   }
-  return out;
-  /*
-  switch(hueSixCategory) {
-    case 0: out = color(bright, 0, 0); break; // r
-    case 1: out = color(255, bright, 0); break; // g
-    case 2: out = color(0, bright, 0); break; // g
-    case 3: out = color(255, 0, bright); break; // b
-    case 4: out = color(0, 0, bright); break; // b
-    default: out = color(bright, 255, 0); break; // r
-  }*/
 }
 
-void saturate(float amt) {
+void saturate() {
+  buildMap(saturateMap, 20, int(random(1, 8) * 128));
+  
   int n = width * height;
   loadPixels();
   for (int i = 0; i < n; i++) {
-    pixels[i] = saturate(pixels[i], amt);
+    pixels[i] = saturate(pixels[i], saturateMap.pixels[i] & 0xff);
   }
   updatePixels();
 }

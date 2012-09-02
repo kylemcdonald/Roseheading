@@ -47,7 +47,7 @@ int[] modes = {
 };*/
 
 PImage[] images;
-PGraphics regionMap, modeMap;
+PGraphics regionMap, modeMap, saturateMap;
 
 void setup() {
   //frameRate(.5);
@@ -60,6 +60,7 @@ void setup() {
   }
   regionMap = createGraphics(width, height, JAVA2D);
   modeMap = createGraphics(width, height, JAVA2D);
+  saturateMap = createGraphics(width, height, JAVA2D);
 }
 
 void keyPressed() {
@@ -80,6 +81,6 @@ void draw() {
     int curMode = randomExclusive(modes.length);
     blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
-  saturate(1);
+  saturate();
 }
 
