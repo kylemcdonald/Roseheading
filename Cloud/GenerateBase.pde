@@ -1,13 +1,13 @@
 String[] files = {
-  "pdfglitch.png"
-  /*"building.png", 
+  "pdfglitch.png",
+  "building.png", 
   "bytebeat.png", 
   "cmdtab.png", 
   "gpunoise.png", 
   "infinitefill.png", 
   "interface.png", 
   "stacks.png", 
-  "street.png",*/
+  "street.png"
 };
 
 int[] modes = {
@@ -35,7 +35,7 @@ void setupGenerator() {
 }
 
 void generateBase(PGraphics pg) {
-  int passes = 4;
+  int passes = 3;
   pg.beginDraw();
   pg.noSmooth();
   if(frameCount == 0) {
@@ -60,8 +60,6 @@ void generateBase(PGraphics pg) {
 }
 
 color saturate(color in, int mode) {
-  return in;
-  /*
   float curSaturation = saturation(in);
   if(curSaturation == 0) {
     return in;
@@ -69,44 +67,31 @@ color saturate(color in, int mode) {
   float bright = brightness(in);
   float hueSix = hue(in) * 6 / 255;
   int hueSixCategory = int(hueSix);
-  if(mode < 10) {  // standard saturation transform
-    float hueSixRemainder = hueSix - hueSixCategory;
-    float saturationNorm = mode / 10.;
-    float pv = ((1 - saturationNorm) * bright);
-    float qv = ((1 - saturationNorm * hueSixRemainder) * bright);
-    float tv = ((1 - saturationNorm * (1 - hueSixRemainder)) * bright);
+  if (mode < 10) { // dark-leaning cmyk
     switch(hueSixCategory) {
-      case 0: return color(bright, tv, pv); // r
-      case 1: return color(qv, bright, pv); // g
-      case 2: return color(pv, bright, tv); // g
-      case 3: return color(pv, qv, bright); // b
-      case 4: return color(tv, pv, bright); // b
-      default: return color(bright, pv, qv); // r
+      case 0: return color(bright, 0, bright); // r
+      case 1: return color(bright, bright, 0); // g
+      case 2: return color(bright, bright, 0); // g
+      case 3: return color(0, bright, bright); // b
+      case 4: return color(0, bright, bright); // b
+      default: return color(bright, 0, bright); // r
     }
-  } else if (mode < 15) { // cmyk-leaning transform
+  } else if (mode < 20) { // bright-leaning cmyk
     switch(hueSixCategory) {
-      
-      case 0: return color(bright, 255, 255); // r
-      case 1: return color(255, bright, 255); // g
-      case 2: return color(255, bright, 255); // g
-      case 3: return color(255, 255, bright); // b
-      case 4: return color(255, 255, bright); // b
-      default: return color(bright, 255, 255); // r
-      
-      case 0: return color(0, bright, bright); // r
-      case 1: return color(bright, 0, bright); // g
-      case 2: return color(bright, 0, bright); // g
-      case 3: return color(bright, bright, 0); // b
-      case 4: return color(bright, bright, 0); // b
-      default: return color(0, bright, bright); // r
+      case 0: return color(255, bright, 255); // r
+      case 1: return color(255, 255, bright); // g
+      case 2: return color(255, 255, bright); // g
+      case 3: return color(bright, 255, 255); // b
+      case 4: return color(bright, 255, 255); // b
+      default: return color(255, bright, 255); // r
     }
-  } else { // threshold
-    return bright > 128 ? color(255) : color(0);
-  }*/
+  } else { // desaturate
+    return color(bright);
+  }
 }
 
 void saturate(PGraphics pg) {
-  buildMap(saturateMap, 17, int(random(1, 8) * 128));
+  buildMap(saturateMap, 25, int(random(1, 8) * 128));
   int n = pg.width * pg.height;
   pg.loadPixels();
   for (int i = 0; i < n; i++) {

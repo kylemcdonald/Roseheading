@@ -1,11 +1,11 @@
 String[] files = {
+  "pdfglitch.png", 
   "building.png", 
   "bytebeat.png", 
   "cmdtab.png", 
   "gpunoise.png", 
   "infinitefill.png", 
   "interface.png", 
-  "pdfglitch.png", 
   "stacks.png", 
   "street.png"
 };
