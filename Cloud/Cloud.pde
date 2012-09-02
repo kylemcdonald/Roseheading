@@ -8,28 +8,30 @@ int pw, ph;
 float moveTime = 2000;
 int moveRadius = 16; // blocks
 
-boolean debug = false;
-boolean backwards = false, lastBackwards = false;
-int backwardsStart = 0;
+float zoomStart = 0;
+float zoomTime = 2000;
+PImage zoomBuffer;
 
 void setup() {
   size(950, 540);
   noSmooth();
   noStroke();
   
-  setupGenerator();
-  generateBase(base);
+  zoomBuffer = createImage(width, height, RGB);
 
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
   target = loadImage("data.png");
   baseChop = new PImage[pw * ph];
-  chop(base, baseChop);
-  matchTarget();
+
+  buildScene();
 }
 
-float smoothStep(float x) {
-  return 3.*(x*x)-2.*(x*x*x);
+void buildScene() {
+  setupGenerator();
+  generateBase(base);
+  chop(base, baseChop);
+  matchTarget();
 }
 
 void matchTarget() {
@@ -61,14 +63,6 @@ void arrangePieces(PImage img) {
   int w = img.width, h = img.height;
   int sw = floor(w / pw), sh = floor(h / ph);
   int curTime = millis();
-  float backwardsDiff = curTime - backwardsStart;
-  if (lastBackwards == true && backwardsDiff > moveTime) {
-    backwards = false;
-    // reset states
-    states = new int[states.length];
-  }
-  lastBackwards = backwards;
-  
   int k = 0;
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
@@ -77,34 +71,22 @@ void arrangePieces(PImage img) {
       int sx = cx * sw, sy = cy * sh;
       int tx = x * sw, ty = y * sh;
       int ax, ay;
-      if (debug) {
-        ax = tx;
-        ay = ty;
+      float timeDiff = constrain(curTime - states[cur], 0, moveTime);
+      float state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
+      state = smoothStep(state);
+      int dx = int(abs(tx - sx)), dy = int(abs(ty - sy));
+      state *= (dx + dy);
+      if (dx > dy) {
+        ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx));
+        ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy));
       } 
       else {
-        float timeDiff = constrain(curTime - states[cur], 0, moveTime);
-        if (backwards) {
-          timeDiff -= backwardsDiff;
-        }
-        float state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
-        state = smoothStep(state);
-        int dx = int(abs(tx - sx)), dy = int(abs(ty - sy));
-        state *= (dx + dy);
-        if (dx > dy) {
-          ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx));
-          ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy));
-        } 
-        else {
-          ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
-          ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
-        }
+        ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
+        ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
       }
 
-      if(keyPressed) {
-      fill(baseSmall.pixels[cur]); rect(ax, ay, sw, sh);
-      } else {
+      //fill(baseSmall.pixels[cur]); rect(ax, ay, sw, sh);
       image(baseChop[cur], ax, ay);
-      }
       //image(img.get(sx, sy, sw, sh), ax, ay);
 
       k++;
@@ -124,8 +106,9 @@ void trigger(int x, int y) {
 }
 
 void mousePressed() {
-  backwards = true;
-  backwardsStart = millis();
+  zoomBuffer = get();
+  zoomStart = millis();
+  states = new int[states.length];
 }
 
 void keyPressed() {

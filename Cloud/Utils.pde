@@ -6,6 +6,10 @@ int tickTimer() {
   return diff;
 }
 
+float smoothStep(float x) {
+  return 3.*(x*x)-2.*(x*x*x);
+}
+
 color mean(PImage src, int x, int y, int w, int h) {
   float[] sum = new float[3];
   int i = y * src.width + x;
