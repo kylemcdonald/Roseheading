@@ -31,7 +31,6 @@ void buildMap(PGraphics pg, int levels, int side, int ox, int oy) {
     while(px < width) {
       px = x;
       x += side;
-      
       if(b()) {
         pg.fill(randomExclusive(levels));
         pg.triangle(px, py, px, y, x, py);

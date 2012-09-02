@@ -21,11 +21,11 @@ color saturate(color c, float pump) {
   }
 }
 
-void saturate() {
+void saturate(float amt) {
   int n = width * height;
   loadPixels();
   for (int i = 0; i < n; i++) {
-    pixels[i] = saturate(pixels[i], 1);
+    pixels[i] = saturate(pixels[i], amt);
   }
   updatePixels();
 }

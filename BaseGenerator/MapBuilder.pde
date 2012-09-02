@@ -6,36 +6,28 @@ int randomExclusive(int n) {
   return int(min(random(n), n - 1));
 }
 
-void buildMap(PGraphics pg, int levels, int minScale, int maxScale) {
-  buildMap(pg, levels, minScale, maxScale, minScale, maxScale);
-}
-
-void buildMap(PGraphics pg, int levels, int minx, int maxx, int miny, int maxy) {
+void buildMap(PGraphics pg, int levels, int side, int ox, int oy) {
   pg.beginDraw();
   pg.noSmooth();
-  pg.background(0);
   pg.noStroke();
-  float py = 0, y = 0;
+  pg.background(0);
+  int py = oy, y = oy;
   while(py < height) {
-    float px0 = 0, px1 = 0;
-    float x0 = 0, x1 = 0;
-    y += random(miny, maxy);
-    while(px0 < width || px1 < width) {
-      px0 = x0;
-      px1 = x1;
-      x0 += random(minx, maxx);
-      x1 += random(minx, maxx);
-      
+    int px = ox, x = ox;
+    y += side;
+    while(px < width) {
+      px = x;
+      x += side;
       if(b()) {
         pg.fill(randomExclusive(levels));
-        pg.triangle(px0, py, px0, y, x0, py);
+        pg.triangle(px, py, px, y, x, py);
         pg.fill(randomExclusive(levels));
-        pg.triangle(x0, py, x0, y, px0, y);
+        pg.triangle(x, py, x, y, px, y);
       } else {
         pg.fill(randomExclusive(levels));
-        pg.triangle(px0, py, px0, y, x0, y);
+        pg.triangle(px, py, px, y, x, y);
         pg.fill(randomExclusive(levels));
-        pg.triangle(x0, py, x0, y, px0, py);
+        pg.triangle(x, py, x, y, px, py);
       }
     }
     py = y;

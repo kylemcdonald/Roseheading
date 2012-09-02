@@ -1,10 +1,10 @@
 PImage createBase(int alphaValue) {
   PImage base = createImage(width, height, ARGB);
   
-  float regionScale = random(128, 1024), modeScale = 32;
-  buildMap(regionMap, images.length, int(regionScale), int(regionScale));
+  float regionScale = random(32, 1024), modeScale = random(16, 64);
+  buildMap(regionMap, images.length, int(regionScale), int(-random(regionScale)), int(-random(regionScale)));
   regionMap.loadPixels();
-  buildMap(modeMap, 255, int(modeScale / 2), int(modeScale));
+  buildMap(modeMap, 255, int(modeScale), int(-random(modeScale)), int(-random(modeScale)));
   modeMap.loadPixels();
 
   int alphaMask = color(255, alphaValue);
@@ -19,7 +19,6 @@ PImage createBase(int alphaValue) {
   boolean badSync = random(2) > 1;
   for (int i = 0; i < n; ++i) {
     int curChoice = regionMap.pixels[i] & 0xff;
-    base.pixels[i] = images[curChoice].pixels[j] & alphaMask;
     if(badSync) {
       if(i % zoom == 0) {
         ++j;
@@ -46,6 +45,7 @@ PImage createBase(int alphaValue) {
       }
     }
     j %= m;
+    base.pixels[i] = images[curChoice].pixels[j] & alphaMask;
     prevChoice = curChoice;
   }
   base.updatePixels();

@@ -29,7 +29,8 @@ String[] files = {
 };
 
 int[] modes = {
-  ADD,SUBTRACT};
+  //ADD,SUBTRACT};
+  SCREEN, OVERLAY};
   /*ADD, 
   SUBTRACT, 
   DARKEST, 
@@ -79,6 +80,6 @@ void draw() {
     int curMode = randomExclusive(modes.length);
     blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
-  saturate();
+  saturate(.5);
 }
 
