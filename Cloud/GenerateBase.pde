@@ -1,18 +1,19 @@
 String[] files = {
-  "building.png", 
+  "pdfglitch.png"
+  /*"building.png", 
   "bytebeat.png", 
   "cmdtab.png", 
   "gpunoise.png", 
   "infinitefill.png", 
   "interface.png", 
-  "pdfglitch.png", 
   "stacks.png", 
-  "street.png"
+  "street.png",*/
 };
 
 int[] modes = {
+  SCREEN, OVERLAY, SUBTRACT, MULTIPLY, ADD, SOFT_LIGHT, HARD_LIGHT, DODGE, BURN
   //SUBTRACT, SCREEN, OVERLAY, SCREEN, OVERLAY
-  BURN, SCREEN, OVERLAY, SCREEN, OVERLAY
+  //BURN, SCREEN, OVERLAY, SCREEN, OVERLAY
   //SUBTRACT, SCREEN, SOFT_LIGHT, SCREEN, SOFT_LIGHT
   //SCREEN, OVERLAY
   //SCREEN, MULTIPLY
@@ -49,7 +50,8 @@ void generateBase(PGraphics pg) {
   }
   for (int i = 0; i < passes; i++) {
     PImage cur = createSingle(128);
-    int curMode = i % modes.length;
+    //int curMode = i % modes.length;
+    int curMode = randomExclusive(modes.length);
     pg.blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
   saturate(pg);
@@ -58,6 +60,8 @@ void generateBase(PGraphics pg) {
 }
 
 color saturate(color in, int mode) {
+  return in;
+  /*
   float curSaturation = saturation(in);
   if(curSaturation == 0) {
     return in;
@@ -81,16 +85,24 @@ color saturate(color in, int mode) {
     }
   } else if (mode < 15) { // cmyk-leaning transform
     switch(hueSixCategory) {
+      
       case 0: return color(bright, 255, 255); // r
       case 1: return color(255, bright, 255); // g
       case 2: return color(255, bright, 255); // g
       case 3: return color(255, 255, bright); // b
       case 4: return color(255, 255, bright); // b
       default: return color(bright, 255, 255); // r
+      
+      case 0: return color(0, bright, bright); // r
+      case 1: return color(bright, 0, bright); // g
+      case 2: return color(bright, 0, bright); // g
+      case 3: return color(bright, bright, 0); // b
+      case 4: return color(bright, bright, 0); // b
+      default: return color(0, bright, bright); // r
     }
   } else { // threshold
     return bright > 128 ? color(255) : color(0);
-  }
+  }*/
 }
 
 void saturate(PGraphics pg) {

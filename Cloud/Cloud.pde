@@ -10,7 +10,8 @@ int moveRadius = 16; // blocks
 
 int zoomStart = 0;
 int zoomTime = 1000;
-int fadeTime = 2000;
+int fadeStart = 0;
+int fadeTime = 1000;
 PImage zoomBuffer;
 
 void setup() {
@@ -29,9 +30,11 @@ void setup() {
 }
 
 void buildScene() {
+  zoomBuffer = get();
+  randomSeed(millis());
   setupGenerator();
   generateBase(base);
-  chop(base, baseChop);
+  chop(base, baseChop, pw, ph);
   matchTarget();
 }
 
@@ -46,7 +49,7 @@ void matchTarget() {
   states = new int[positions.length];
 }
 
-void chop(PGraphics img, PImage[] chop) {
+void chop(PImage img, PImage[] chop, int pw, int ph) {
   int w = img.width, h = img.height;
   int sw = int(w / pw), sh = int(h / ph);
   int i = 0;
@@ -95,25 +98,37 @@ void arrangePieces(PImage img) {
   }
 }
 
+int lastZoomState;
 void draw() {
   int curTime = millis();
-  int state = curTime - zoomStart;
-  if(zoomStart > 0 && state < zoomTime) {
-    float zoomNorm = float(curTime - zoomStart) / zoomTime;
+  int zoomState = curTime - zoomStart;
+  
+  if(zoomStart > 0 && lastZoomState < zoomTime && zoomState >= zoomTime) {
+    buildScene();
+    curTime = millis();
+    fadeStart = curTime;
+  } else {
+    arrangePieces(base);
+  }
+  lastZoomState = zoomState;
+  
+  if(zoomStart > 0 && zoomState < zoomTime) {
+    float zoomNorm = float(zoomState) / zoomTime;
     zoomNorm = smoothStep(zoomNorm);
     float zoomScale = lerp(1, 2, zoomNorm);
     translate(zoomX, zoomY);
     scale(zoomScale, zoomScale);
     translate(-zoomX, -zoomY);
     image(zoomBuffer, 0, 0);
-  } else if(zoomStart > 0 && state < fadeTime) {
-    translate(zoomX, zoomY);
-    scale(2, 2);
-    translate(-zoomX, -zoomY);
+  }
+  
+  int fadeState = curTime - fadeStart;
+  if(fadeStart > 0 && fadeState < fadeTime) {
+    float fadeNorm = float(fadeState) / fadeTime;
+    pushStyle();
+    tint(255, (1 - fadeNorm) * 255);
     image(zoomBuffer, 0, 0);
-    buildScene();
-  } else {
-    arrangePieces(base);
+    popStyle();
   }
 }
 
@@ -128,7 +143,6 @@ int zoomX, zoomY;
 void mousePressed() {
   zoomBuffer = get();
   zoomStart = millis();
-  states = new int[states.length];
   zoomX = mouseX;
   zoomY = mouseY;
 }
