@@ -21,8 +21,8 @@ int[] modes = {
 };
 
 PImage[] images;
-PGraphics base, regionMap, modeMap, saturateMap;
-void setupGenerator() {
+PGraphics regionMap, modeMap, saturateMap;
+void setupBaseGenerator() {
   images = new PImage[files.length];
   for (int i = 0; i < files.length; i++) {
     images[i] = loadImage(files[i]);
@@ -41,12 +41,7 @@ void generateBase(PGraphics pg) {
   if(frameCount == 0) {
     pg.image(createSingle(255), 0, 0);
   } else {
-    pg.pushMatrix();
-    pg.translate(zoomX, zoomY);
-    pg.scale(2, 2);
-    pg.translate(-zoomX, -zoomY);
     pg.image(zoomBuffer, 0, 0);
-    pg.popMatrix();
   }
   for (int i = 0; i < passes; i++) {
     PImage cur = createSingle(128);

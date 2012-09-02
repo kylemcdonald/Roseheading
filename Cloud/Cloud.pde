@@ -1,4 +1,4 @@
-PImage target;
+PGraphics base, target;
 PImage baseSmall, targetSmall;
 PImage[] baseChop;
 
@@ -20,19 +20,21 @@ void setup() {
   noStroke();
   
   zoomBuffer = createImage(width, height, RGB);
+  target = createGraphics(width, height, JAVA2D);
 
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
-  target = loadImage("data.png");
   baseChop = new PImage[pw * ph];
 
+  setupBaseGenerator();
+  setupTargetGenerator();
+  
   buildScene();
 }
 
 void buildScene() {
   zoomBuffer = get();
-  randomSeed(millis());
-  setupGenerator();
+  generateTarget(target);
   generateBase(base);
   chop(base, baseChop, pw, ph);
   matchTarget();
