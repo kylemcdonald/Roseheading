@@ -1,6 +1,4 @@
-/* @pjs preload="base.png, target.png"; */
-
-PImage base, target;
+PImage target;
 PImage baseSmall, targetSmall;
 PImage[] baseChop;
 
@@ -21,10 +19,12 @@ void setup() {
   noSmooth();  
   textFont(font, 10);
   textAlign(LEFT, TOP);
+  
+  setupGenerator();
+  generateBase(base);
 
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
-  base = loadImage("oceanic.png");
   target = loadImage("target.png");
   baseChop = new PImage[pw * ph];
   chop(base, baseChop);
@@ -46,7 +46,7 @@ void matchTarget() {
   states = new int[positions.length];
 }
 
-void chop(PImage img, PImage[] chop) {
+void chop(PGraphics img, PImage[] chop) {
   int w = img.width, h = img.height;
   int sw = int(w / pw), sh = int(h / ph);
   int i = 0;
@@ -137,11 +137,6 @@ void keyPressed() {
   if (key == 's') {
     saveFrame("screen-###.png");
   }
-}
-
-// for mobile apps
-void mouseDragged() {
-  mouseMoved();
 }
 
 void mouseMoved() {
