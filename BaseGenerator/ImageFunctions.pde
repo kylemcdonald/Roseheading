@@ -20,20 +20,31 @@ color saturate(color c, int mode) {
       case 4: return color(tv, pv, bright); // b
       default: return color(bright, pv, qv); // r
     }
-  } else {
+  } else if (mode < 15) {
     switch(hueSixCategory) {
-      case 0: return color(bright, 0, 0); // r
-      case 1: return color(255, bright, 0); // g
-      case 2: return color(0, bright, 0); // g
-      case 3: return color(255, 0, bright); // b
-      case 4: return color(0, 0, bright); // b
-      default: return color(bright, 255, 0); // r
+      case 0: return color(bright, 255, 0); // r
+      case 1: return color(bright, bright, 0); // g
+      case 2: return color(255, bright, 0); // g
+      case 3: return color(0, bright, bright); // b
+      case 4: return color(0, 255, bright); // b
+      default: return color(bright, bright, 0); // r
     }
+  } else if (mode < 20) {
+    switch(hueSixCategory) {
+      case 0: return color(bright, 255, 255); // r
+      case 1: return color(255, bright, 255); // g
+      case 2: return color(255, bright, 255); // g
+      case 3: return color(255, 255, bright); // b
+      case 4: return color(255, 255, bright); // b
+      default: return color(bright, 255, 255); // r
+    }
+  } else {
+    return bright > 128 ? color(255) : color(0);
   }
 }
 
 void saturate() {
-  buildMap(saturateMap, 20, int(random(1, 8) * 128));
+  buildMap(saturateMap, 25, int(random(1, 8) * 128));
   
   int n = width * height;
   loadPixels();

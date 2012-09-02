@@ -29,7 +29,6 @@ String[] files = {
 };
 
 int[] modes = {
-  //ADD,SUBTRACT};
   SCREEN, OVERLAY};
   /*ADD, 
   SUBTRACT, 

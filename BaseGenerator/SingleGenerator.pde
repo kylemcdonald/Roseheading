@@ -12,7 +12,7 @@ PImage createBase(int alphaValue) {
   int prevChoice = 0;
   
   base.loadPixels();
-  int zoomBase = int(random(2, 32));
+  int zoomBase = int(pow(2, int(random(1, 6)))); //int(random(2, 64));
   int zoom = 1;
   boolean badSync = random(2) > 1;
   for (int i = 0; i < n; ++i) {
