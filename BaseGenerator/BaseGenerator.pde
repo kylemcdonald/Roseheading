@@ -29,8 +29,8 @@ String[] files = {
 };
 
 int[] modes = {
-  //ADD,SUBTRACT};
-  ADD, 
+  ADD,SUBTRACT};
+  /*ADD, 
   SUBTRACT, 
   DARKEST, 
   LIGHTEST, 
@@ -43,7 +43,7 @@ int[] modes = {
   SOFT_LIGHT, 
   DODGE, 
   BURN
-};
+};*/
 
 PImage[] images;
 PGraphics regionMap, modeMap;
@@ -73,12 +73,12 @@ void draw() {
   randomSeed(mouseX);
   random(1); // some bug with the RNG makes the first number similar
 
-  image(createBase(255), 0, 0);/*
+  image(createBase(255), 0, 0);
   for(int i = 0; i < 4; i++) {
     PImage cur = createBase(128);
     int curMode = randomExclusive(modes.length);
     blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
-  saturate();*/
+  saturate();
 }
 
