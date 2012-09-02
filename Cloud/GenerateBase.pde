@@ -40,6 +40,7 @@ void generateBase(PGraphics pg) {
   }
   saturate(pg);
   pg.endDraw();
+  pg.loadPixels();
 }
 
 color saturate(color in, int mode) {

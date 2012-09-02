@@ -12,20 +12,17 @@ boolean debug = false;
 boolean backwards = false, lastBackwards = false;
 int backwardsStart = 0;
 
-PFont font = createFont("Arial", 10, false);
-
 void setup() {
   size(950, 540);
-  noSmooth();  
-  textFont(font, 10);
-  textAlign(LEFT, TOP);
+  noSmooth();
+  noStroke();
   
   setupGenerator();
   generateBase(base);
 
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
-  target = loadImage("target.png");
+  target = loadImage("data.png");
   baseChop = new PImage[pw * ph];
   chop(base, baseChop);
   matchTarget();
@@ -103,8 +100,11 @@ void arrangePieces(PImage img) {
         }
       }
 
-      //rect(ax, ay, sw, sh);
+      if(keyPressed) {
+      fill(baseSmall.pixels[cur]); rect(ax, ay, sw, sh);
+      } else {
       image(baseChop[cur], ax, ay);
+      }
       //image(img.get(sx, sy, sw, sh), ax, ay);
 
       k++;
@@ -114,11 +114,6 @@ void arrangePieces(PImage img) {
 
 void draw() {
   arrangePieces(base);
-
-  fill(0);
-  rect(5, 5, 100, 25);
-  fill(255);
-  text(frameCount + " / " + int(frameRate), 10, 10);
 }
 
 void trigger(int x, int y) {
