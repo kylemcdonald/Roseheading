@@ -9,6 +9,10 @@ void flatten(ArrayList[] nested, int[] flat) {
   }
 }
 
+float lightness(color c) {
+  return ((c & 0xff) + ((c >> 8) & 0xff) + ((c >> 16) & 0xff)) / 3;
+}
+
 int binCount = 256;
 int[] findMosaic(PImage srcImg, PImage dstImg) {
   int n = srcImg.width * srcImg.height;
@@ -20,8 +24,8 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
     dstBins[i] = new ArrayList();
   }
   for (int i = 0; i < n; i++) {
-    srcBins[int(brightness(src[i]))].add(i);
-    dstBins[int(brightness(dst[i]))].add(i);
+    srcBins[int(lightness(src[i]))].add(i);
+    dstBins[int(lightness(dst[i]))].add(i);
   }
   int[] positions = new int[n];
   int[] flatSrc = new int[n];

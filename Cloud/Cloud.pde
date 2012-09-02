@@ -8,8 +8,9 @@ int pw, ph;
 float moveTime = 2000;
 int moveRadius = 16; // blocks
 
-float zoomStart = 0;
-float zoomTime = 2000;
+int zoomStart = 0;
+int zoomTime = 1000;
+int fadeTime = 2000;
 PImage zoomBuffer;
 
 void setup() {
@@ -95,7 +96,25 @@ void arrangePieces(PImage img) {
 }
 
 void draw() {
-  arrangePieces(base);
+  int curTime = millis();
+  int state = curTime - zoomStart;
+  if(zoomStart > 0 && state < zoomTime) {
+    float zoomNorm = float(curTime - zoomStart) / zoomTime;
+    zoomNorm = smoothStep(zoomNorm);
+    float zoomScale = lerp(1, 2, zoomNorm);
+    translate(zoomX, zoomY);
+    scale(zoomScale, zoomScale);
+    translate(-zoomX, -zoomY);
+    image(zoomBuffer, 0, 0);
+  } else if(zoomStart > 0 && state < fadeTime) {
+    translate(zoomX, zoomY);
+    scale(2, 2);
+    translate(-zoomX, -zoomY);
+    image(zoomBuffer, 0, 0);
+    buildScene();
+  } else {
+    arrangePieces(base);
+  }
 }
 
 void trigger(int x, int y) {
@@ -105,10 +124,13 @@ void trigger(int x, int y) {
   }
 }
 
+int zoomX, zoomY;
 void mousePressed() {
   zoomBuffer = get();
   zoomStart = millis();
   states = new int[states.length];
+  zoomX = mouseX;
+  zoomY = mouseY;
 }
 
 void keyPressed() {

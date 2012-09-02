@@ -11,7 +11,12 @@ String[] files = {
 };
 
 int[] modes = {
-  SCREEN, OVERLAY
+  //SUBTRACT, SCREEN, OVERLAY, SCREEN, OVERLAY
+  BURN, SCREEN, OVERLAY, SCREEN, OVERLAY
+  //SUBTRACT, SCREEN, SOFT_LIGHT, SCREEN, SOFT_LIGHT
+  //SCREEN, OVERLAY
+  //SCREEN, MULTIPLY
+  //SUBTRACT, ADD
 };
 
 PImage[] images;
@@ -32,10 +37,19 @@ void generateBase(PGraphics pg) {
   int passes = 4;
   pg.beginDraw();
   pg.noSmooth();
-  pg.image(createSingle(255), 0, 0);
+  if(frameCount == 0) {
+    pg.image(createSingle(255), 0, 0);
+  } else {
+    pg.pushMatrix();
+    pg.translate(zoomX, zoomY);
+    pg.scale(2, 2);
+    pg.translate(-zoomX, -zoomY);
+    pg.image(zoomBuffer, 0, 0);
+    pg.popMatrix();
+  }
   for (int i = 0; i < passes; i++) {
     PImage cur = createSingle(128);
-    int curMode = randomExclusive(modes.length);
+    int curMode = i % modes.length;
     pg.blend(cur, 0, 0, width, height, 0, 0, width, height, modes[curMode]);
   }
   saturate(pg);
@@ -65,16 +79,7 @@ color saturate(color in, int mode) {
       case 4: return color(tv, pv, bright); // b
       default: return color(bright, pv, qv); // r
     }
-  } else if (mode < 15) { // rgbw-leaning transform
-    switch(hueSixCategory) {
-      case 0: return color(bright, 255, 0); // r
-      case 1: return color(bright, bright, 0); // g
-      case 2: return color(255, bright, 0); // g
-      case 3: return color(0, bright, bright); // b
-      case 4: return color(0, 255, bright); // b
-      default: return color(bright, bright, 0); // r
-    }
-  } else if (mode < 20) { // cmyk-leaning transform
+  } else if (mode < 15) { // cmyk-leaning transform
     switch(hueSixCategory) {
       case 0: return color(bright, 255, 255); // r
       case 1: return color(255, bright, 255); // g
@@ -89,7 +94,7 @@ color saturate(color in, int mode) {
 }
 
 void saturate(PGraphics pg) {
-  buildMap(saturateMap, 24, int(random(1, 8) * 128));
+  buildMap(saturateMap, 17, int(random(1, 8) * 128));
   int n = pg.width * pg.height;
   pg.loadPixels();
   for (int i = 0; i < n; i++) {
