@@ -6,6 +6,10 @@ int tickTimer() {
   return diff;
 }
 
+float lightness(color c) {
+  return ((c & 0xff) + ((c >> 8) & 0xff) + ((c >> 16) & 0xff)) / 3;
+}
+
 color mean(PImage src, int x, int y, int w, int h) {
   float[] sum = new float[3];
   int i = y * src.width + x;

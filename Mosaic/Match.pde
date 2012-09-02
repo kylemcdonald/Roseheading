@@ -20,8 +20,8 @@ int[] findMosaic(PImage srcImg, PImage dstImg) {
     dstBins[i] = new ArrayList();
   }
   for (int i = 0; i < n; i++) {
-    srcBins[int(brightness(src[i]))].add(i);
-    dstBins[int(brightness(dst[i]))].add(i);
+    srcBins[int(lightness(src[i]))].add(i);
+    dstBins[int(lightness(dst[i]))].add(i);
   }
   int[] positions = new int[n];
   int[] flatSrc = new int[n];

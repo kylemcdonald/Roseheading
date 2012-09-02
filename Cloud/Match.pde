@@ -9,10 +9,6 @@ void flatten(ArrayList[] nested, int[] flat) {
   }
 }
 
-float lightness(color c) {
-  return ((c & 0xff) + ((c >> 8) & 0xff) + ((c >> 16) & 0xff)) / 3;
-}
-
 int binCount = 256;
 int[] findMosaic(PImage srcImg, PImage dstImg) {
   int n = srcImg.width * srcImg.height;

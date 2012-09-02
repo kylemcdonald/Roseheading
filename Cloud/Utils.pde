@@ -6,6 +6,10 @@ int tickTimer() {
   return diff;
 }
 
+float lightness(color c) {
+  return ((c & 0xff) + ((c >> 8) & 0xff) + ((c >> 16) & 0xff)) / 3;
+}
+
 float smoothStep(float x) {
   return 3.*(x*x)-2.*(x*x*x);
 }

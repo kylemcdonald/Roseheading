@@ -13,7 +13,7 @@ void setup() {
   pw = int(width / pieceSize);
   ph = int(height / pieceSize);
   base = loadImage("base.png");
-  target = loadImage("target.png");
+  target = loadImage("data.png");
   matchTarget();
 }
 
