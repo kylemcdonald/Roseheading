@@ -2,6 +2,7 @@ void flatten(ArrayList[] nested, int[] flat) {
   int k = 0;
   for (int i = 0; i < nested.length; i++) {
     ArrayList cur = nested[i];
+    //Collections.shuffle(cur);
     for (int j = 0; j < cur.size(); j++) {
       flat[k] = (Integer) cur.get(j);
       k++;
