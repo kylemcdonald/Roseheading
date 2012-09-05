@@ -6,8 +6,8 @@ int randomExclusive(int n) {
   return int(min(random(n), n - 1));
 }
 
-void buildTriangleField(PGraphics pg, int levels, int side) {
-  side = (side);
+void buildTriangleField(PGraphics pg, int levels, float side) {
+  side = floor(side);
   pg.beginDraw();
   pg.noSmooth();
   pg.noStroke();
@@ -17,9 +17,11 @@ void buildTriangleField(PGraphics pg, int levels, int side) {
   while(py < height) {
     float px = ox, x = ox;
     y += side;
+    y = floor(y);
     while(px < width) {
       px = x;
       x += side;
+      x = floor(x);
       float off = b() ? 0 : random(side / 4);
       if(b()) {
         pg.fill(randomExclusive(levels));

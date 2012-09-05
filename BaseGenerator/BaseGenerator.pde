@@ -1,7 +1,7 @@
 void setup() {
   size(950, 540);
   noSmooth();
-  setupGenerator();
+  setupBaseGenerator();
 }
 
 void keyPressed() {

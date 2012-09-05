@@ -1,4 +1,4 @@
-PGraphics base, target;
+PGraphics target;
 PImage baseSmall, targetSmall;
 PImage[] baseChop;
 
@@ -117,7 +117,7 @@ void draw() {
   if(zoomStart > 0 && zoomState < zoomTime) {
     float zoomNorm = float(zoomState) / zoomTime;
     zoomNorm = smoothStep(zoomNorm);
-    float zoomScale = lerp(1, 2, zoomNorm);
+    float zoomScale = lerp(1, 16, zoomNorm);
     translate(zoomX, zoomY);
     scale(zoomScale, zoomScale);
     translate(-zoomX, -zoomY);
@@ -160,7 +160,7 @@ void mouseMoved() {
   if (x >= 0 && y >= 0 && x < pw && y < ph) {
     for (int i = 0; i < pw; i++) {
       for (int j = 0; j < ph; j++) {
-        if (dist(i, j, x, y) < moveRadius) {
+        if (dist(i, j, x, y) < moveRadius * random(.1, 1)) {
           trigger(i, j);
         }
       }

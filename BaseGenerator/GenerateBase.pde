@@ -19,7 +19,7 @@ int[] modes = {
 
 PImage[] images;
 PGraphics base, regionMap, modeMap;
-void setupGenerator() {
+void setupBaseGenerator() {
   images = new PImage[files.length];
   for (int i = 0; i < files.length; i++) {
     images[i] = loadImage(files[i]);
@@ -31,7 +31,7 @@ void setupGenerator() {
 }
 
 void generateBase(PGraphics pg) {
-  int passes = random(4);
+  int passes = floor(random(4));
   pg.beginDraw();
   pg.noSmooth();
   pg.image(createSingle(255), 0, 0);
