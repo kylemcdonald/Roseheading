@@ -15,5 +15,6 @@ void draw() {
   randomSeed(mouseX);
   generateBase(base);
   image(base, 0, 0);
+  println(frameRate);
 }
 
