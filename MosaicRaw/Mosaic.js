@@ -23,6 +23,8 @@ function print(msg) {
 
 var base, target;
 var baseSmall, targetSmall;
+var screenImageData;
+var baseCanvas, baseContext, baseImageData;
 var positions;
 var pw, ph, pn, pieceSize = 10;
 
@@ -43,12 +45,17 @@ function setup() {
   pn = pw * ph;
   
   base = new Image(), base.src = "img/base.png";
-  baseSmall = createResized(base, pw, ph);
+  baseSmall = copy(base, pw, ph);
 
   target = new Image(), target.src = "img/target.png";
-  targetSmall = createResized(target, pw, ph);
-
+  targetSmall = copy(target, pw, ph);
+  
   positions = findMosaic(baseSmall, targetSmall);
+  
+  screenImageData = ctx.createImageData(width, height);
+  baseCanvas = copy(base, width, height);
+  baseContext = baseCanvas.getContext('2d');
+  baseImageData = baseContext.getImageData(0, 0, width, height);
   
   setupStats();
 }
@@ -57,25 +64,40 @@ function draw() {
   stats.begin();
   sw = Math.floor(width / pw);
   sh = Math.floor(height / ph);
-  i = 0;
-  for (y = 0; y < ph; y++) {
-    for (x = 0; x < pw; x++) {
-      cur = positions[i];
+  pi = 0;
+  src = baseImageData.data;
+  dst = screenImageData.data;
+  for (py = 0; py < ph; py++) {
+    for (px = 0; px < pw; px++) {
+      cur = positions[pi];
       cy = Math.floor(cur / pw);
       cx = cur - (cy * pw);
       sx = cx * sw, sy = cy * sh;
-      tx = x * sw, ty = y * sh;
-      ctx.drawImage(base, sx, sy, sw, sh, tx, ty, sw, sh);
-      i++;
+      dx = px * sw, dy = py * sh;
+      
+      for(yy = 0; yy < sh; yy++) {
+        for(xx = 0; xx < sw; xx++) {
+          si = (sy + yy) * width + (sx + xx);
+          di = (dy + yy) * width + (dx + xx);
+          si *= 4, di *= 4;
+          dst[di+0] = src[si+0];
+          dst[di+1] = src[si+1];
+          dst[di+2] = src[si+2];
+          dst[di+3] = 255; //src[si+3];
+        }
+      }
+      
+      pi++;
     }
   }
+  ctx.putImageData(screenImageData, 0, 0);
   stats.end();
 }
 
-function createResized(from, width, height) {
+function copy(mom, width, height) {
   buffer = document.createElement('canvas');
   buffer.width = width, buffer.height = height;
-  buffer.getContext('2d').drawImage(from, 0, 0, width, height);
+  buffer.getContext('2d').drawImage(mom, 0, 0, width, height);
   return buffer;
 }
 
