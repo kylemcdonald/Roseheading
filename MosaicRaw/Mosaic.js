@@ -62,29 +62,42 @@ function setup() {
 
 function draw() {
   stats.begin();
+  
+  for(i = 0; i < 10; i++) {
+    left = Math.floor(Math.random() * pn);
+    right = Math.floor(Math.random() * pn);
+    swap = positions[left];
+    positions[left] = positions[right];
+    positions[right] = swap;
+  }
+  
   sw = Math.floor(width / pw);
   sh = Math.floor(height / ph);
   pi = 0;
   src = baseImageData.data;
   dst = screenImageData.data;
-  for (py = 0; py < ph; py++) {
-    for (px = 0; px < pw; px++) {
+  stepSize = 4 * (width - sw);
+  for (py = 0; py < ph; ++py) {
+    for (px = 0; px < pw; ++px) {
       cur = positions[pi];
       cy = Math.floor(cur / pw);
       cx = cur - (cy * pw);
       sx = cx * sw, sy = cy * sh;
       dx = px * sw, dy = py * sh;
       
-      for(yy = 0; yy < sh; yy++) {
-        for(xx = 0; xx < sw; xx++) {
-          si = (sy + yy) * width + (sx + xx);
-          di = (dy + yy) * width + (dx + xx);
-          si *= 4, di *= 4;
-          dst[di+0] = src[si+0];
+      // copy sw x sh pixels
+      si = 4 * (sy * width + sx);
+      di = 4 * (dy * width + dx);
+      for(yy = 0; yy < sh; ++yy) {
+        for(xx = 0; xx < sw; ++xx) {
+          dst[di] = src[si];
           dst[di+1] = src[si+1];
           dst[di+2] = src[si+2];
-          dst[di+3] = 255; //src[si+3];
+          dst[di+3] = 255;
+          di += 4, si += 4;
         }
+        si += stepSize;
+        di += stepSize;
       }
       
       pi++;
