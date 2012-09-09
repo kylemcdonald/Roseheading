@@ -23,12 +23,21 @@ function print(msg) {
 
 var base, target;
 var baseSmall, targetSmall;
-
-var positions, states;
+var positions;
 var pw, ph, pn, pieceSize = 10;
 
+var stats;
+function setupStats() {
+  stats = new Stats();
+  stats.setMode(0);
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.left = '0px';
+  stats.domElement.style.top = '0px';
+  document.body.appendChild(stats.domElement);
+}
+
 function setup() {
-  frameRate = 30;
+  frameRate = 60;
   pw = Math.floor(width / pieceSize);
   ph = Math.floor(height / pieceSize);
   pn = pw * ph;
@@ -40,16 +49,31 @@ function setup() {
   targetSmall = createResized(target, pw, ph);
 
   positions = findMosaic(baseSmall, targetSmall);
-  //states = new int[positions.length];
+  
+  setupStats();
 }
 
 function draw() {
-  ctx.drawImage(baseSmall, 0, 0);
-  ctx.drawImage(targetSmall, pw, 0);
+  stats.begin();
+  sw = Math.floor(width / pw);
+  sh = Math.floor(height / ph);
+  i = 0;
+  for (y = 0; y < ph; y++) {
+    for (x = 0; x < pw; x++) {
+      cur = positions[i];
+      cy = Math.floor(cur / pw);
+      cx = cur - (cy * pw);
+      sx = cx * sw, sy = cy * sh;
+      tx = x * sw, ty = y * sh;
+      ctx.drawImage(base, sx, sy, sw, sh, tx, ty, sw, sh);
+      i++;
+    }
+  }
+  stats.end();
 }
 
 function createResized(from, width, height) {
-  var buffer = document.createElement('canvas');
+  buffer = document.createElement('canvas');
   buffer.width = width, buffer.height = height;
   buffer.getContext('2d').drawImage(from, 0, 0, width, height);
   return buffer;
@@ -61,7 +85,7 @@ function lightness(src, i) {
 }
 
 function flatten(nested) {
-  var flat = new Array();
+  flat = new Array();
   for(i = 0; i < nested.length; i++) {
     for(j = 0; j < nested[i].length; j++) {
       flat.push(nested[i][j]);
@@ -76,40 +100,39 @@ function sortLightness(a, b) {
 
 var binnedSorting = false;
 function findMosaic(src, dst) {
-  var positions = new Array(pn);
+  positions = new Array(pn);
   
-  var srcData = src.getContext('2d').getImageData(0, 0, pw, ph).data;
-  var dstData = dst.getContext('2d').getImageData(0, 0, pw, ph).data;
+  srcData = src.getContext('2d').getImageData(0, 0, pw, ph).data;
+  dstData = dst.getContext('2d').getImageData(0, 0, pw, ph).data;
   
   if(binnedSorting) {
-    var binCount = 256;
-    var srcBins = new Array(binCount);
-    var dstBins = new Array(binCount);
-    for (var i = 0; i < binCount; i++) {
+    binCount = 256;
+    srcBins = new Array(binCount);
+    dstBins = new Array(binCount);
+    for (i = 0; i < binCount; i++) {
       srcBins[i] = new Array();
       dstBins[i] = new Array();
     }
-    var msg = "";
-    var j = 0;
-    for (var i = 0; i < pn; i++) {
+    j = 0;
+    for (i = 0; i < pn; i++) {
       srcBins[lightness(srcData, i)].push(i);
       dstBins[lightness(dstData, i)].push(i);
     }
-    var flatSrc = flatten(srcBins);
-    var flatDst = flatten(dstBins);
-    for (var i = 0; i < pn; i++) {
+    flatSrc = flatten(srcBins);
+    flatDst = flatten(dstBins);
+    for (i = 0; i < pn; i++) {
       positions[flatDst[i]] = flatSrc[i];
     }
   } else {
-    var srcPairs = new Array(pn);
-    var dstPairs = new Array(pn);
+    srcPairs = new Array(pn);
+    dstPairs = new Array(pn);
     for(i = 0; i < pn; i++) {
       srcPairs[i] = {index: i, lightness: lightness(srcData, i)};
       dstPairs[i] = {index: i, lightness: lightness(dstData, i)};
     }
     srcPairs.sort(sortLightness);
     dstPairs.sort(sortLightness);
-    for (var i = 0; i < pn; i++) {
+    for (i = 0; i < pn; i++) {
       positions[dstPairs[i].index] = srcPairs[i].index;
     }
   }

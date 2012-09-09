@@ -3,7 +3,7 @@
 PImage base, target;
 PImage baseSmall, targetSmall;
 
-int[] positions, states;
+int[] positions;
 int pieceSize = 10;
 int pw, ph;
 
@@ -25,7 +25,6 @@ void matchTarget() {
   resizeArea(target, targetSmall);
 
   positions = findMosaic(baseSmall, targetSmall);
-  states = new int[positions.length];
 }
 
 void arrangePieces(PImage img, int pw, int ph, int[] positions) {
