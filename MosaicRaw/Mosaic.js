@@ -1,7 +1,7 @@
 var canvas, ctx;
 var width, height;
 var interval;
-var frameRate = 30, frameCount = 0;
+var frameRate = 1000, frameCount = 0;
 
 function init() {
   canvas = document.getElementById("Mosaic");
@@ -39,7 +39,7 @@ function setupStats() {
 }
 
 function setup() {
-  frameRate = 60;
+  //frameRate = 60;
   pw = Math.floor(width / pieceSize);
   ph = Math.floor(height / pieceSize);
   pn = pw * ph;
@@ -77,6 +77,8 @@ function draw() {
   src = baseImageData.data;
   dst = screenImageData.data;
   stepSize = 4 * (width - sw);
+  
+  var cur, cx, cy, sx, sy, dx, dy, si, di, xx, yy;
   for (py = 0; py < ph; ++py) {
     for (px = 0; px < pw; ++px) {
       cur = positions[pi];
