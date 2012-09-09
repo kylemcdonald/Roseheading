@@ -18,7 +18,7 @@ void setup() {
   size(950, 540);
   noSmooth();
   noStroke();
-  
+
   zoomBuffer = createImage(width, height, RGB);
   target = createGraphics(width, height, JAVA2D);
 
@@ -28,7 +28,7 @@ void setup() {
 
   setupBaseGenerator();
   setupTargetGenerator();
-  
+
   buildScene();
 }
 
@@ -63,13 +63,13 @@ void chop(PImage img, PImage[] chop, int pw, int ph) {
   }
 }
 
-void arrangePieces(PImage img) {
-  img.loadPixels();
-
-  int w = img.width, h = img.height;
+int[][] getPiecePositions() {
+  int w = width, h = height;
   int sw = floor(w / pw), sh = floor(h / ph);
   int curTime = millis();
   int k = 0;
+  int n = pw * ph;
+  int[][] piecePositions = new int[n][2];
   for (int y = 0; y < ph; y++) {
     for (int x = 0; x < pw; x++) {
       int cur = positions[k];
@@ -90,31 +90,35 @@ void arrangePieces(PImage img) {
         ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
         ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
       }
-
-      //fill(baseSmall.pixels[cur]); rect(ax, ay, sw, sh);
-      image(baseChop[cur], ax, ay);
-      //image(img.get(sx, sy, sw, sh), ax, ay);
-
+      piecePositions[cur][0] = ax;
+      piecePositions[cur][1] = ay;
       k++;
     }
   }
+  return piecePositions;
+}
+
+void arrangePieces(PImage img) {
+  int[][] piecePositions = getPiecePositions();
+  drawMosaic(img, width, height, pw, ph, piecePositions);
 }
 
 int lastZoomState;
 void draw() {
   int curTime = millis();
   int zoomState = curTime - zoomStart;
-  
-  if(zoomStart > 0 && lastZoomState < zoomTime && zoomState >= zoomTime) {
+
+  if (zoomStart > 0 && lastZoomState < zoomTime && zoomState >= zoomTime) {
     buildScene();
     curTime = millis();
     fadeStart = curTime;
-  } else {
+  } 
+  else {
     arrangePieces(base);
   }
   lastZoomState = zoomState;
-  
-  if(zoomStart > 0 && zoomState < zoomTime) {
+
+  if (zoomStart > 0 && zoomState < zoomTime) {
     float zoomNorm = float(zoomState) / zoomTime;
     zoomNorm = smoothStep(zoomNorm);
     float zoomScale = lerp(1, 16, zoomNorm);
@@ -123,15 +127,17 @@ void draw() {
     translate(-zoomX, -zoomY);
     image(zoomBuffer, 0, 0);
   }
-  
+
   int fadeState = curTime - fadeStart;
-  if(fadeStart > 0 && fadeState < fadeTime) {
+  if (fadeStart > 0 && fadeState < fadeTime) {
     float fadeNorm = float(fadeState) / fadeTime;
     pushStyle();
     tint(255, (1 - fadeNorm) * 255);
     image(zoomBuffer, 0, 0);
     popStyle();
   }
+
+  println(frameRate);
 }
 
 void trigger(int x, int y) {
