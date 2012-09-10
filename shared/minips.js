@@ -10,13 +10,14 @@ function init() {
   width = canvas.width, height = canvas.height;
   setupStats();
   setup();
-  interval = setInterval(
-    function() {
-      stats.begin();
-      draw();
-      frameCount++
-      stats.end();
-    }, 1000 / frameRate);
+  interval = setInterval(loop, 1000 / frameRate);
+}
+
+function loop() {
+  stats.begin();
+  draw();
+  stats.end();
+  frameCount++
 }
 
 var stats;
@@ -24,8 +25,8 @@ function setupStats() {
   stats = new Stats();
   stats.setMode(0);
   stats.domElement.style.position = 'absolute';
-  stats.domElement.style.bottom = '0px';
-  stats.domElement.style.right = '0px';
+  stats.domElement.style.top = '.5em';
+  stats.domElement.style.left = '.5em';
   document.body.appendChild(stats.domElement);
 }
 
