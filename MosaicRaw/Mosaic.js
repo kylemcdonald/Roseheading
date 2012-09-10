@@ -133,19 +133,16 @@ function getImageData(canvas) {
   return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
 }
 
+// resize an Image into an HTMLCanvasElement using area averaging
 function resizeArea(src, dw, dh) {
   sw = src.width, sh = src.height;
-  w = sw / dw, h = sh / dh;
-  
+  w = Math.floor(sw / dw), h = Math.floor(sh / dh);
   srcCanvas = imageToCanvas(src);
   dstCanvas = createCanvas(dw, dh);
-  
   srcImageData = getImageData(srcCanvas);
   dstImageData = dstCanvas.getContext('2d').createImageData(dw, dh);
-  
   srcData = srcImageData.data;
   dstData = dstImageData.data;
-  
   i = 0;
   n = w * h;
   var x, y, j, stepSize, xx, yy;
@@ -175,7 +172,7 @@ function resizeArea(src, dw, dh) {
   return dstCanvas;
 }  
 
-function lightness(src, i) {
+function getLightness(src, i) {
   i *= 4;
   return (src[i] + src[i+1] + src[i+2]) / 3;
 }
@@ -202,8 +199,8 @@ function findMosaic(src, dst) {
     dstBins[i] = new Array();
   }
   for (i = 0; i < pn; ++i) {
-    srcBins[lightness(srcData, i)|0].push(i);
-    dstBins[lightness(dstData, i)|0].push(i);
+    srcBins[getLightness(srcData, i)|0].push(i);
+    dstBins[getLightness(dstData, i)|0].push(i);
   }
   flatSrc = flatten(srcBins);
   flatDst = flatten(dstBins);

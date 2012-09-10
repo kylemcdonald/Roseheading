@@ -31,7 +31,7 @@ void setupBaseGenerator() {
 }
 
 void generateBase(PGraphics pg) {
-  int passes = floor(random(4));
+  int passes =  floor(random(1, 4));
   pg.beginDraw();
   pg.noSmooth();
   if(frameCount == 0) {
