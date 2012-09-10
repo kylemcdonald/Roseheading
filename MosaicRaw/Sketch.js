@@ -1,27 +1,8 @@
-var canvas, ctx;
-var width, height;
-var interval;
-var frameRate = 1000, frameCount = 0;
+var base = new Image();
+base.src = "img/base.png";
+var target = new Image();
+target.src = "img/target.png";
 
-function init() {
-  canvas = document.getElementById("Mosaic");
-  ctx = canvas.getContext("2d");
-  width = canvas.width, height = canvas.height;
-  setup();
-  interval = setInterval(
-    function() {
-      draw();
-      frameCount++
-    }, 1000 / frameRate);
-}
-
-function print(msg) {
-  document.getElementById("debug").innerHTML = msg;
-}
-
-// - - --
-
-var base, target;
 var baseSmall, targetSmall;
 var screenImageData;
 var baseCanvas, baseImageData;
@@ -44,10 +25,7 @@ function setup() {
   ph = Math.floor(height / pieceSize);
   pn = pw * ph;
   
-  base = new Image(), base.src = "img/base.png";
   baseSmall = resizeArea(base, pw, ph);
-
-  target = new Image(), target.src = "img/target.png";
   targetSmall = resizeArea(target, pw, ph);
   
   positions = findMosaic(baseSmall, targetSmall);
@@ -80,8 +58,8 @@ function draw() {
   stepSize = 4 * (width - sw);
   
   var cur, cx, cy, sx, sy, dx, dy, si, di, xx, yy;
-  for (py = 0; py < ph; ++py) {
-    for (px = 0; px < pw; ++px) {
+  for (py = 0; py < ph; py++) {
+    for (px = 0; px < pw; px++) {
       cur = positions[pi];
       cy = Math.floor(cur / pw);
       cx = cur - (cy * pw);
@@ -91,13 +69,12 @@ function draw() {
       // copy sw x sh pixels
       si = 4 * (sy * width + sx);
       di = 4 * (dy * width + dx);
-      for(yy = 0; yy < sh; ++yy) {
-        for(xx = 0; xx < sw; ++xx) {
-          dst[di] = src[si];
-          dst[di+1] = src[si+1];
-          dst[di+2] = src[si+2];
-          dst[di+3] = 255;
-          di += 4, si += 4;
+      for(yy = 0; yy < sh; yy++) {
+        for(xx = 0; xx < sw; xx++) {
+          dst[di++] = src[si++];
+          dst[di++] = src[si++];
+          dst[di++] = src[si++];
+          dst[di++] = 255; si++;
         }
         si += stepSize;
         di += stepSize;
@@ -147,17 +124,17 @@ function resizeArea(src, dw, dh) {
   n = w * h;
   var x, y, j, stepSize, xx, yy;
   sum = new Array(3);
-  for(y = 0; y < dh; ++y) {
-    for(x = 0; x < dw; ++x) {
+  for(y = 0; y < dh; y++) {
+    for(x = 0; x < dw; x++) {
       sum[0] = 0, sum[1] = 0, sum[2] = 0;
       j = 4 * ((y * h * sw) + (x * w));
       stepSize = 4 * (sw - w);
-      for(yy = 0; yy < h; ++yy) {
-        for(xx = 0; xx < w; ++xx) {
-          sum[0] += srcData[j];
-          sum[1] += srcData[j+1];
-          sum[2] += srcData[j+2];
-          j += 4;
+      for(yy = 0; yy < h; yy++) {
+        for(xx = 0; xx < w; xx++) {
+          sum[0] += srcData[j++];
+          sum[1] += srcData[j++];
+          sum[2] += srcData[j++];
+          j++;
         }
         j += stepSize;
       }      

@@ -4,7 +4,7 @@ var interval;
 var frameRate = 1000, frameCount = 0;
 
 function init() {
-  canvas = document.getElementById("TriangleMix");
+  canvas = document.getElementById("BaseGenerator");
   ctx = canvas.getContext("2d");
   width = canvas.width, height = canvas.height;
   setup();
