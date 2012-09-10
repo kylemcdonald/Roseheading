@@ -49,8 +49,8 @@ function generateBase() {
 }
 
 function createSingle() {
-  regionScale = random(32, 32);//1024);
-  modeScale = random(16, 16);//64);
+  regionScale = 32;//random(32, 1024);
+  modeScale = 32;//random(16, 64);
   buildTriangleField(base, images.length, regionScale);
   buildTriangleField(modeMap, 255, modeScale);
   
