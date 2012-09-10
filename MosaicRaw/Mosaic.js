@@ -45,10 +45,10 @@ function setup() {
   pn = pw * ph;
   
   base = new Image(), base.src = "img/base.png";
-  baseSmall = imageToCanvas(base, pw, ph);
+  baseSmall = resizeArea(base, pw, ph);
 
   target = new Image(), target.src = "img/target.png";
-  targetSmall = imageToCanvas(target, pw, ph);
+  targetSmall = resizeArea(target, pw, ph);
   
   positions = findMosaic(baseSmall, targetSmall);
   
@@ -107,7 +107,12 @@ function draw() {
     }
   }
   ctx.putImageData(screenImageData, 0, 0);
+  
+  ctx.drawImage(baseSmall, 0, 0);
+  ctx.drawImage(targetSmall, pw, 0);
+  
   stats.end();
+  
 }
 
 function createCanvas(width, height) {
@@ -135,8 +140,12 @@ function resizeArea(src, dw, dh) {
   srcCanvas = imageToCanvas(src);
   dstCanvas = createCanvas(dw, dh);
   
-  srcData = getImageData(srcCanvas);
-  dstData = getImageData(dstCanvas);
+  srcImageData = getImageData(srcCanvas);
+  dstImageData = dstCanvas.getContext('2d').createImageData(dw, dh);
+  
+  srcData = srcImageData.data;
+  dstData = dstImageData.data;
+  
   i = 0;
   n = w * h;
   var x, y, j, stepSize, xx, yy;
@@ -144,8 +153,8 @@ function resizeArea(src, dw, dh) {
   for(y = 0; y < dh; ++y) {
     for(x = 0; x < dw; ++x) {
       sum[0] = 0, sum[1] = 0, sum[2] = 0;
-      j = (y * h * sw) + (x * w);
-      stepSize = sw - w;
+      j = 4 * ((y * h * sw) + (x * w));
+      stepSize = 4 * (sw - w);
       for(yy = 0; yy < h; ++yy) {
         for(xx = 0; xx < w; ++xx) {
           sum[0] += srcData[j];
@@ -162,13 +171,13 @@ function resizeArea(src, dw, dh) {
       i += 4;
     }
   }
-  dstCanvas.getContext('2d').putImageData(dstData, dw, dh);
+  dstCanvas.getContext('2d').putImageData(dstImageData, 0, 0);
   return dstCanvas;
 }  
 
 function lightness(src, i) {
   i *= 4;
-  return Math.floor((src[i] + src[i+1] + src[i+2]) / 3);
+  return (src[i] + src[i+1] + src[i+2]) / 3;
 }
 
 function flatten(nested) {
@@ -181,48 +190,25 @@ function flatten(nested) {
   return flat;
 }
 
-function sortLightness(a, b) {
-  return a.lightness - b.lightness;
-}
-
-var binnedSorting = false;
 function findMosaic(src, dst) {
   positions = new Array(pn);
-  
-  srcData = src.getContext('2d').getImageData(0, 0, pw, ph).data;
-  dstData = dst.getContext('2d').getImageData(0, 0, pw, ph).data;
-  
-  if(binnedSorting) {
-    binCount = 256;
-    srcBins = new Array(binCount);
-    dstBins = new Array(binCount);
-    for (i = 0; i < binCount; ++i) {
-      srcBins[i] = new Array();
-      dstBins[i] = new Array();
-    }
-    j = 0;
-    for (i = 0; i < pn; ++i) {
-      srcBins[lightness(srcData, i)].push(i);
-      dstBins[lightness(dstData, i)].push(i);
-    }
-    flatSrc = flatten(srcBins);
-    flatDst = flatten(dstBins);
-    for (i = 0; i < pn; ++i) {
-      positions[flatDst[i]] = flatSrc[i];
-    }
-  } else {
-    srcPairs = new Array(pn);
-    dstPairs = new Array(pn);
-    for(i = 0; i < pn; ++i) {
-      srcPairs[i] = {index: i, lightness: lightness(srcData, i)};
-      dstPairs[i] = {index: i, lightness: lightness(dstData, i)};
-    }
-    srcPairs.sort(sortLightness);
-    dstPairs.sort(sortLightness);
-    for (i = 0; i < pn; ++i) {
-      positions[dstPairs[i].index] = srcPairs[i].index;
-    }
+  srcData = getImageData(src).data;
+  dstData = getImageData(dst).data;
+  binCount = 256;
+  srcBins = new Array(binCount);
+  dstBins = new Array(binCount);
+  for (i = 0; i < binCount; ++i) {
+    srcBins[i] = new Array();
+    dstBins[i] = new Array();
   }
-  
+  for (i = 0; i < pn; ++i) {
+    srcBins[lightness(srcData, i)|0].push(i);
+    dstBins[lightness(dstData, i)|0].push(i);
+  }
+  flatSrc = flatten(srcBins);
+  flatDst = flatten(dstBins);
+  for (i = 0; i < pn; ++i) {
+    positions[flatDst[i]] = flatSrc[i];
+  }  
   return positions;
 }
