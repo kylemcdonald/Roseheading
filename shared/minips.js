@@ -40,9 +40,18 @@ function random(a, b) {
   return Math.random() * (b - a) + a;
 }
 
+function pow(x, y) {
+  return Math.pow(x, y);
+}
+
+function floor(x) {
+  return x|0;
+}
+
 function pick(x) {
   if(typeof(x)==='undefined') return Math.random() > .5;
-  return random(x);
+  var result = random(x)|0;
+  return result < x ? result : x;
 }
 
 function fill(brightness, ctx) {
@@ -73,9 +82,15 @@ function loadImages(files) {
 }
 
 function createCanvas(width, height) {
-  canvas = document.createElement('canvas');
+  var canvas = document.createElement('canvas');
   canvas.width = width, canvas.height = height;
   return canvas;
+}
+
+function imageToRaw(src) {
+  var canvas = imageToCanvas(src);
+  var imageData = getImageData(canvas);
+  return imageData.data;
 }
 
 function imageToCanvas(src, width, height) {
