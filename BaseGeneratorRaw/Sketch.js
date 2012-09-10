@@ -57,40 +57,40 @@ function createSingle() {
   baseImageData = getImageData(base);
   modeMapImageData = getImageData(modeMap);
   
-  m = dataWidth * dataHeight;
-  n = width * height;
-  prevChoice = 0, curMode = 0;
-  zoom = 1, zoomBase = floor(pow(2, random(1, 6)));
-  badSync = pick();
+  var m = dataWidth * dataHeight;
+  var n = width * height;
+  var curChoice = 0, prevChoice = 0, curMode = 0;
+  var zoom = 1, zoomBase = floor(pow(2, random(1, 6)));
+  var badSync = pick();
   
-  baseData = baseImageData.data;
-  modeMapData = modeMapImageData.data;
+  var baseData = baseImageData.data;
+  var modeMapData = modeMapImageData.data;
   
   var i, j = 0, k = 0;
-  var curChoice, verticalSync, horizontalSync, firstLineOnly;
   for(i = 0; i < n; i++) {
     curChoice = baseData[k] % images.length;
     
-    if(badSync) {
-      if(i % zoom == 0) {
-        ++j;
+    if(zoom == 1) {
+      j++;
+    } else {
+      if(badSync) {
+        if(i % zoom == 0) {
+          j++;
+        }
+      } else if(((i % width) % zoom) == 0) {
+        j++;
       }
-    } else if(((i % width) % zoom) == 0) {
-      ++j;
     }
     if(curChoice != prevChoice) {
       curMode = modeMapData[k];
-      verticalSync = (curMode & 1) > 0;
-      horizontalSync = (curMode & 2) > 0;
-      firstLineOnly = (curMode & 4) > 0;
       zoom = (curMode & 8) > 0 ? zoomBase : 1;
-      if (firstLineOnly) {
+      if((curMode & 1) > 0) { // first line only
         j = 0;
       }
-      if (verticalSync) {
+      if((curMode & 2) > 0) { // vertical sync
         j = floor(floor(i / width) / zoom) * dataWidth;
       }
-      if (horizontalSync) {
+      if((curMode & 4) > 0) { // horizontal sync
         j += (i % width);
       }
     }
@@ -101,7 +101,7 @@ function createSingle() {
     baseData[k+2] = imagesData[curChoice][j*4+2];
     baseData[k+3] = 255;
     
-    // we should also handle the blending here
+    // should also handle the blending here
     
     prevChoice = curChoice;
     
