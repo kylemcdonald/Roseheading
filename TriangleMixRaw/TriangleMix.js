@@ -27,12 +27,12 @@ function random(a, b) {
 
 function pick(x) {
   if(typeof(x)==='undefined') return Math.random() > .5;
-  else return random(x);
+  return random(x);
 }
 
 function fill(brightness) {
   brightness |= 0;
-  ctx.fillStyle = 'rgba(' + brightness + ',' + brightness + ',' + brightness + ', 255)';
+  ctx.strokeStyle = ctx.fillStyle = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
 }
 
 function triangle(ax, ay, bx, by, cx, cy) {
@@ -41,6 +41,7 @@ function triangle(ax, ay, bx, by, cx, cy) {
   ctx.lineTo(bx|0, by|0);
   ctx.lineTo(cx|0, cy|0);
   ctx.fill();
+  ctx.stroke();
   ctx.closePath();
 }
 
