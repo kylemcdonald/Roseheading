@@ -75,24 +75,6 @@ function draw() {
   ctx.drawImage(targetSmall, pw, 0);  
 }
 
-function createCanvas(width, height) {
-  canvas = document.createElement('canvas');
-  canvas.width = width, canvas.height = height;
-  return canvas;
-}
-
-function imageToCanvas(src, width, height) {
-  if(typeof(width)==='undefined') width = src.width;
-  if(typeof(height)==='undefined') height = src.height;
-  buffer = createCanvas(width, height);
-  buffer.getContext('2d').drawImage(src, 0, 0, width, height);
-  return buffer;
-}
-
-function getImageData(canvas) {
-  return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-}
-
 // resize an Image into an HTMLCanvasElement using area averaging
 function resizeArea(src, dw, dh) {
   sw = src.width, sh = src.height;

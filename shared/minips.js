@@ -45,12 +45,14 @@ function pick(x) {
   return random(x);
 }
 
-function fill(brightness) {
+function fill(brightness, ctx) {
+  if(typeof(ctx)=='undefined') ctx = this.ctx;
   brightness |= 0;
   ctx.strokeStyle = ctx.fillStyle = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
 }
 
-function triangle(ax, ay, bx, by, cx, cy) {
+function triangle(ax, ay, bx, by, cx, cy, ctx) {
+  if(typeof(ctx)=='undefined') ctx = this.ctx;
   ctx.beginPath();
   ctx.moveTo(ax|0, ay|0);
   ctx.lineTo(bx|0, by|0);
@@ -68,4 +70,26 @@ function loadImages(files) {
     images.push(image);
   }
   return images;
+}
+
+function createCanvas(width, height) {
+  canvas = document.createElement('canvas');
+  canvas.width = width, canvas.height = height;
+  return canvas;
+}
+
+function imageToCanvas(src, width, height) {
+  if(typeof(width)==='undefined') width = src.width;
+  if(typeof(height)==='undefined') height = src.height;
+  buffer = createCanvas(width, height);
+  buffer.getContext('2d').drawImage(src, 0, 0, width, height);
+  return buffer;
+}
+
+function getImageData(canvas) {
+  return getContext(canvas).getImageData(0, 0, canvas.width, canvas.height);
+}
+
+function getContext(canvas) {
+  return canvas.getContext('2d');
 }
