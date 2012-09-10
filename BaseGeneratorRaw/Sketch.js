@@ -13,7 +13,7 @@ var images = loadImages(files);
 var dataWidth, dataHeight;
 
 function setup() {
-  frameRate = 1;//60;
+  //frameRate = 1;//60;
   dataWidth = images[0].width;
   dataHeight = images[0].height;
   setupImageData();
@@ -68,7 +68,8 @@ function createSingle() {
   var modeMapData = modeMapImageData.data;
   
   var i, j = 0, k = 0;
-  var blendMode = pick(2);
+  var blendMode = pick(4);
+  print(["opaque", "screen", "multiply", "overlay"][blendMode]);
   var ar, ag, ab, br, bg, bb, cr, cg, cb, f;
   for(i = 0; i < n; i++) {
     curChoice = regionMapData[k] % images.length;
@@ -109,9 +110,9 @@ function createSingle() {
     
     switch(blendMode) {
       case 0: // opaque
-        baseData[k] = br;//imagesData[curChoice][j*4];
-        baseData[k+1] = bg;//imagesData[curChoice][j*4+1];
-        baseData[k+2] = bb;//imagesData[curChoice][j*4+2];
+        cr = br;
+        cg = bg;
+        cb = bb;
         break;
       case 1: // screen
         cr = 255 - ((255 - ar) * (255 - br) >> 8);
@@ -121,11 +122,29 @@ function createSingle() {
         cr = ar + ((cr - ar) * f >> 8);
         cg = ag + ((cg - ag) * f >> 8);
         cb = ab + ((cb - ab) * f >> 8);
-        baseData[k] = cr;
-        baseData[k+1] = cg;
-        baseData[k+2] = cb;
-        break;     
+        break;
+      case 2: // multiply
+        cr = (ar * br) >> 8;
+        cg = (ag * bg) >> 8;
+        cb = (ab * bb) >> 8;
+        f = 128;
+        cr = ar + ((cr - ar) * f >> 8);
+        cg = ag + ((cg - ag) * f >> 8);
+        cb = ab + ((cb - ab) * f >> 8);
+        break;
+      case 3: // overlay
+        cr = ar < 128 ? ar * br >> 7 : 255 - ((255 - ar) * (255 - br) >> 7);
+        cg = ag < 128 ? ag * bg >> 7 : 255 - ((255 - ag) * (255 - bg) >> 7);
+        cb = ab < 128 ? ab * bb >> 7 : 255 - ((255 - ab) * (255 - bb) >> 7);
+        f = 128;
+        cr = ar + ((cr - ar) * f >> 8);
+        cg = ag + ((cg - ag) * f >> 8);
+        cb = ab + ((cb - ab) * f >> 8);
+        break;
     }
+    baseData[k] = cr;
+    baseData[k+1] = cg;
+    baseData[k+2] = cb;
     baseData[k+3] = 255;
     
     prevChoice = curChoice;
