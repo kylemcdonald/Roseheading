@@ -9,16 +9,6 @@ var baseCanvas, baseImageData;
 var positions;
 var pw, ph, pn, pieceSize = 10;
 
-var stats;
-function setupStats() {
-  stats = new Stats();
-  stats.setMode(0);
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.left = '0px';
-  stats.domElement.style.top = '0px';
-  document.body.appendChild(stats.domElement);
-}
-
 function setup() {
   //frameRate = 60;
   pw = Math.floor(width / pieceSize);
@@ -33,13 +23,9 @@ function setup() {
   screenImageData = ctx.createImageData(width, height);
   baseCanvas = imageToCanvas(base);
   baseImageData = getImageData(baseCanvas);
-  
-  setupStats();
 }
 
 function draw() {
-  stats.begin();
-  
   /*
   for(i = 0; i < 10; ++i) {
     left = Math.floor(Math.random() * pn);
@@ -86,10 +72,7 @@ function draw() {
   ctx.putImageData(screenImageData, 0, 0);
   
   ctx.drawImage(baseSmall, 0, 0);
-  ctx.drawImage(targetSmall, pw, 0);
-  
-  stats.end();
-  
+  ctx.drawImage(targetSmall, pw, 0);  
 }
 
 function createCanvas(width, height) {

@@ -1,21 +1,8 @@
-var stats;
-function setupStats() {
-  stats = new Stats();
-  stats.setMode(0);
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.left = '0px';
-  stats.domElement.style.top = '0px';
-  document.body.appendChild(stats.domElement);
-}
-
 function setup() {
   frameRate = 1;//60;
-  setupStats();
 }
 
 function draw() {
-  stats.begin();
-  
   levels = 255;
   side = random(16, 256);
   ox = -random(side), oy = -random(side);
@@ -41,6 +28,4 @@ function draw() {
     }
     py = y;
   }
-  
-  stats.end();
 }

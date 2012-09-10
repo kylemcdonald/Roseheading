@@ -1,21 +1,21 @@
-var stats;
-function setupStats() {
-  stats = new Stats();
-  stats.setMode(0);
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.left = '0px';
-  stats.domElement.style.top = '0px';
-  document.body.appendChild(stats.domElement);
-}
+var files = [
+  "data/pdfglitch.png", 
+  "data/building.png", 
+  "data/bytebeat.png", 
+  "data/cmdtab.png", 
+  "data/gpunoise.png", 
+  "data/infinitefill.png", 
+  "data/interface.png", 
+  "data/stacks.png", 
+  "data/street.png"
+];
+images = loadImages(files);
 
 function setup() {
   frameRate = 1;//60;
-  setupStats();
 }
 
-function draw() {
-  stats.begin();
-  
+function draw() {  
   levels = 255;
   side = random(16, 256);
   ox = -random(side), oy = -random(side);
@@ -41,6 +41,4 @@ function draw() {
     }
     py = y;
   }
-  
-  stats.end();
 }

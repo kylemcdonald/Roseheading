@@ -8,12 +8,25 @@ function init() {
   canvas = document.getElementById("Sketch");
   ctx = canvas.getContext("2d");
   width = canvas.width, height = canvas.height;
+  setupStats();
   setup();
   interval = setInterval(
     function() {
+      stats.begin();
       draw();
       frameCount++
+      stats.end();
     }, 1000 / frameRate);
+}
+
+var stats;
+function setupStats() {
+  stats = new Stats();
+  stats.setMode(0);
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.bottom = '0px';
+  stats.domElement.style.right = '0px';
+  document.body.appendChild(stats.domElement);
 }
 
 function print(msg) {
@@ -44,4 +57,14 @@ function triangle(ax, ay, bx, by, cx, cy) {
   ctx.fill();
   ctx.stroke();
   ctx.closePath();
+}
+
+function loadImages(files) {
+  var images = new Array();
+  for(i in files) {
+    var image = new Image();
+    image.src = files[i];
+    images.push(image);
+  }
+  return images;
 }
