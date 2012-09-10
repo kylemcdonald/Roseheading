@@ -13,7 +13,8 @@ String[] files = {
 };
 
 int[] modes = {
-  SCREEN, OVERLAY
+  SCREEN
+  //SCREEN, OVERLAY
   //BLEND, ADD, SUBTRACT, DARKEST, LIGHTEST, DIFFERENCE, EXCLUSION, MULTIPLY, SCREEN, OVERLAY, HARD_LIGHT, SOFT_LIGHT, DODGE, BURN
 };
 
@@ -31,7 +32,7 @@ void setupBaseGenerator() {
 }
 
 void generateBase(PGraphics pg) {
-  int passes = floor(random(4));
+  int passes = floor(random(1, 4));
   pg.beginDraw();
   pg.noSmooth();
   pg.image(createSingle(255), 0, 0);

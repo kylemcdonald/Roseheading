@@ -13,17 +13,16 @@ var images = loadImages(files);
 var dataWidth, dataHeight;
 
 function setup() {
-  //frameRate = 60;
+  frameRate = 1;//60;
   dataWidth = images[0].width;
   dataHeight = images[0].height;
   setupImageData();
   setupBaseGenerator();
 }
 
-var imageData;
 function draw() {
   createSingle();
-  ctx.putImageData(baseImageData, 0, 0);
+  ctx.drawImage(base, 0, 0);
 }
 
 // because these are all the same size, we could use a single
@@ -36,12 +35,12 @@ function setupImageData() {
   }
 }
 
-var base, modeMap;
-var baseImageData, modeMapImageData;
+var base, regionMap, modeMap;
+var baseImageData, regionMapImageData, modeMapImageData;
 function setupBaseGenerator() {
   base = createCanvas(width, height);
+  regionMap = createCanvas(width, height);
   modeMap = createCanvas(width, height);
-  // maybe we can fill with alpha = 255 here?
 }
 
 function generateBase() {
@@ -49,12 +48,13 @@ function generateBase() {
 }
 
 function createSingle() {
-  regionScale = 32;//random(32, 1024);
-  modeScale = 32;//random(16, 64);
-  buildTriangleField(base, images.length, regionScale);
+  regionScale = random(32, 1024);
+  modeScale = random(16, 64);
+  buildTriangleField(regionMap, images.length, regionScale);
   buildTriangleField(modeMap, 255, modeScale);
   
   baseImageData = getImageData(base);
+  regionMapImageData = getImageData(regionMap);
   modeMapImageData = getImageData(modeMap);
   
   var m = dataWidth * dataHeight;
@@ -64,11 +64,14 @@ function createSingle() {
   var badSync = pick();
   
   var baseData = baseImageData.data;
+  var regionMapData = regionMapImageData.data;
   var modeMapData = modeMapImageData.data;
   
   var i, j = 0, k = 0;
+  var blendMode = pick(2);
+  var ar, ag, ab, br, bg, bb, cr, cg, cb, f;
   for(i = 0; i < n; i++) {
-    curChoice = baseData[k] % images.length;
+    curChoice = regionMapData[k] % images.length;
     
     if(zoom == 1) {
       j++;
@@ -83,30 +86,54 @@ function createSingle() {
     }
     if(curChoice != prevChoice) {
       curMode = modeMapData[k];
-      zoom = (curMode & 8) > 0 ? zoomBase : 1;
-      if((curMode & 1) > 0) { // first line only
+      zoom = (curMode & 1) > 0 ? zoomBase : 1;
+      if((curMode & 2) > 0) { // first line only
         j = 0;
       }
-      if((curMode & 2) > 0) { // vertical sync
+      if((curMode & 4) > 0) { // vertical sync
         j = floor(floor(i / width) / zoom) * dataWidth;
       }
-      if((curMode & 4) > 0) { // horizontal sync
+      if((curMode & 8) > 0) { // horizontal sync
         j += (i % width);
       }
     }
     j %= m;
     
-    baseData[k] = imagesData[curChoice][j*4];
-    baseData[k+1] = imagesData[curChoice][j*4+1];
-    baseData[k+2] = imagesData[curChoice][j*4+2];
-    baseData[k+3] = 255;
+    ar = baseData[k];
+    ag = baseData[k+1];
+    ab = baseData[k+2];
     
-    // should also handle the blending here
+    br = imagesData[curChoice][j*4];
+    bg = imagesData[curChoice][j*4+1];
+    bb = imagesData[curChoice][j*4+2];
+    
+    switch(blendMode) {
+      case 0: // opaque
+        baseData[k] = br;//imagesData[curChoice][j*4];
+        baseData[k+1] = bg;//imagesData[curChoice][j*4+1];
+        baseData[k+2] = bb;//imagesData[curChoice][j*4+2];
+        break;
+      case 1: // screen
+        cr = 255 - ((255 - ar) * (255 - br) >> 8);
+        cg = 255 - ((255 - ag) * (255 - bg) >> 8);
+        cb = 255 - ((255 - ab) * (255 - bb) >> 8);
+        f = 128;
+        cr = ar + ((cr - ar) * f >> 8);
+        cg = ag + ((cg - ag) * f >> 8);
+        cb = ab + ((cb - ab) * f >> 8);
+        baseData[k] = cr;
+        baseData[k+1] = cg;
+        baseData[k+2] = cb;
+        break;     
+    }
+    baseData[k+3] = 255;
     
     prevChoice = curChoice;
     
     k += 4;
   }
+  
+  getContext(base).putImageData(baseImageData, 0, 0);
 }
 
 function buildTriangleField(canvas, levels, side) {
