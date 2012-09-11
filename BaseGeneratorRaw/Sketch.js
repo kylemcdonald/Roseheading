@@ -13,7 +13,7 @@ var images = loadImages(files);
 var dataWidth, dataHeight;
 
 function setup() {
-  //frameRate = 1;//60;
+  frameRate = 1;//60;
   dataWidth = images[0].width;
   dataHeight = images[0].height;
   setupImageData();
@@ -35,12 +35,13 @@ function setupImageData() {
   }
 }
 
-var base, regionMap, modeMap;
-var baseImageData, regionMapImageData, modeMapImageData;
+var base, regionMap, modeMap, blendMap;
+var baseImageData, regionMapImageData, modeMapImageData, blendMapImageData;
 function setupBaseGenerator() {
   base = createCanvas(width, height);
   regionMap = createCanvas(width, height);
   modeMap = createCanvas(width, height);
+  blendMap = createCanvas(width, height);
 }
 
 function generateBase() {
@@ -48,14 +49,14 @@ function generateBase() {
 }
 
 function createSingle() {
-  regionScale = random(32, 1024);
-  modeScale = random(16, 64);
-  buildTriangleField(regionMap, images.length, regionScale);
-  buildTriangleField(modeMap, 255, modeScale);
+  buildTriangleField(regionMap, images.length, random(8, 1024));
+  buildTriangleField(modeMap, 255, random(8, 64));
+  buildTriangleField(blendMap, 4, random(32, 512));
   
   baseImageData = getImageData(base);
   regionMapImageData = getImageData(regionMap);
   modeMapImageData = getImageData(modeMap);
+  blendMapImageData = getImageData(blendMap);
   
   var m = dataWidth * dataHeight;
   var n = width * height;
@@ -66,10 +67,12 @@ function createSingle() {
   var baseData = baseImageData.data;
   var regionMapData = regionMapImageData.data;
   var modeMapData = modeMapImageData.data;
+  var blendMapData = blendMapImageData.data;
   
   var i, j = 0, k = 0;
-  var blendMode = pick(4);
-  print(["opaque", "screen", "multiply", "overlay"][blendMode]);
+  var blendMode;
+  var allOpaque = (frameCount == 0);
+  
   var ar, ag, ab, br, bg, bb, cr, cg, cb, f;
   for(i = 0; i < n; i++) {
     curChoice = regionMapData[k] % images.length;
@@ -99,49 +102,54 @@ function createSingle() {
       }
     }
     j %= m;
-    
-    ar = baseData[k];
-    ag = baseData[k+1];
-    ab = baseData[k+2];
-    
+       
     br = imagesData[curChoice][j*4];
     bg = imagesData[curChoice][j*4+1];
     bb = imagesData[curChoice][j*4+2];
     
-    switch(blendMode) {
-      case 0: // opaque
-        cr = br;
-        cg = bg;
-        cb = bb;
-        break;
-      case 1: // screen
-        cr = 255 - ((255 - ar) * (255 - br) >> 8);
-        cg = 255 - ((255 - ag) * (255 - bg) >> 8);
-        cb = 255 - ((255 - ab) * (255 - bb) >> 8);
-        f = 128;
-        cr = ar + ((cr - ar) * f >> 8);
-        cg = ag + ((cg - ag) * f >> 8);
-        cb = ab + ((cb - ab) * f >> 8);
-        break;
-      case 2: // multiply
-        cr = (ar * br) >> 8;
-        cg = (ag * bg) >> 8;
-        cb = (ab * bb) >> 8;
-        f = 128;
-        cr = ar + ((cr - ar) * f >> 8);
-        cg = ag + ((cg - ag) * f >> 8);
-        cb = ab + ((cb - ab) * f >> 8);
-        break;
-      case 3: // overlay
-        cr = ar < 128 ? ar * br >> 7 : 255 - ((255 - ar) * (255 - br) >> 7);
-        cg = ag < 128 ? ag * bg >> 7 : 255 - ((255 - ag) * (255 - bg) >> 7);
-        cb = ab < 128 ? ab * bb >> 7 : 255 - ((255 - ab) * (255 - bb) >> 7);
-        f = 128;
-        cr = ar + ((cr - ar) * f >> 8);
-        cg = ag + ((cg - ag) * f >> 8);
-        cb = ab + ((cb - ab) * f >> 8);
-        break;
+    if(allOpaque) {
+      cr = br, cg = bg, cb = bb;
+    } else {
+      ar = baseData[k];
+      ag = baseData[k+1];
+      ab = baseData[k+2];
+      
+      switch(blendMapData[k] % 4) {
+        case 0: // opaque
+          cr = br;
+          cg = bg;
+          cb = bb;
+          break;
+        case 1: // screen
+          cr = 255 - ((255 - ar) * (255 - br) >> 8);
+          cg = 255 - ((255 - ag) * (255 - bg) >> 8);
+          cb = 255 - ((255 - ab) * (255 - bb) >> 8);
+          f = 128;
+          cr = ar + ((cr - ar) * f >> 8);
+          cg = ag + ((cg - ag) * f >> 8);
+          cb = ab + ((cb - ab) * f >> 8);
+          break;
+        case 2: // multiply
+          cr = (ar * br) >> 8;
+          cg = (ag * bg) >> 8;
+          cb = (ab * bb) >> 8;
+          f = 128;
+          cr = ar + ((cr - ar) * f >> 8);
+          cg = ag + ((cg - ag) * f >> 8);
+          cb = ab + ((cb - ab) * f >> 8);
+          break;
+        case 3: // overlay
+          cr = ar < 128 ? ar * br >> 7 : 255 - ((255 - ar) * (255 - br) >> 7);
+          cg = ag < 128 ? ag * bg >> 7 : 255 - ((255 - ag) * (255 - bg) >> 7);
+          cb = ab < 128 ? ab * bb >> 7 : 255 - ((255 - ab) * (255 - bb) >> 7);
+          f = 128;
+          cr = ar + ((cr - ar) * f >> 8);
+          cg = ag + ((cg - ag) * f >> 8);
+          cb = ab + ((cb - ab) * f >> 8);
+          break;
+      }
     }
+    
     baseData[k] = cr;
     baseData[k+1] = cg;
     baseData[k+2] = cb;
