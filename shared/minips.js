@@ -50,6 +50,25 @@ function setupStats() {
   document.body.appendChild(stats.domElement);
 }
 
+function millis() {
+  return Date.now();
+}
+
+function smoothStep(x) {
+  return 3*(x*x)-2*(x*x*x);
+}
+
+function constrain(x, min, max) {
+  if(x < min) return min;
+  if(x > max) return max;
+  return x;
+}
+
+function dist(ax, ay, bx, by) {
+  dx = bx - ax, dy = by - ay;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 function print(msg) {
   document.getElementById("debug").innerHTML = msg;
 }
@@ -66,6 +85,14 @@ function pow(x, y) {
 
 function floor(x) {
   return x|0;
+}
+
+function lerp(start, end, amount) {
+  return start + (end - start) * amount;
+}
+
+function abs(x) {
+  return x < 0 ? -x : x;
 }
 
 function pick(x) {

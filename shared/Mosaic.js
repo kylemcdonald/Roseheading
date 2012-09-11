@@ -31,15 +31,15 @@ function drawMosaic() {
   src = baseImageData.data;
   dst = screenImageData.data;
   stepSize = 4 * (width - sw);
+  piecePositions = getPiecePositions();
   
-  var cur, cx, cy, sx, sy, dx, dy, si, di, xx, yy;
+  var curDst, sx, sy, dx, dy, si, di, xx, yy;
   for (py = 0; py < ph; py++) {
     for (px = 0; px < pw; px++) {
-      cur = positions[pi];
-      cy = floor(cur / pw);
-      cx = cur - (cy * pw);
-      sx = cx * sw, sy = cy * sh;
-      dx = px * sw, dy = py * sh;
+      curDst = piecePositions[pi];
+      
+      sx = px * sw, sy = py * sh;
+      dx = curDst.x * sw, dy = curDst.y * sh;
       
       // copy sw x sh pixels
       si = 4 * (sy * width + sx);
@@ -132,7 +132,7 @@ function findMosaic(src, dst) {
   flatSrc = flatten(srcBins);
   flatDst = flatten(dstBins);
   for (i = 0; i < pn; ++i) {
-    positions[flatDst[i]] = flatSrc[i];
+    positions[flatSrc[i]] = flatDst[i];
   }  
   return positions;
 }
