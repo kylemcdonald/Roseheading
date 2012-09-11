@@ -65,7 +65,7 @@ function createSingle() {
   var n = width * height;
   var curChoice = 0, prevChoice = 0, curMode = 0;
   var zoom = 1, zoomBase = floor(pow(2, random(1, 6)));
-  var badSync = pick();
+  var badSync = random() < .2;
   
   var baseData = baseImageData.data;
   var regionMapData = regionMapImageData.data;
@@ -94,14 +94,15 @@ function createSingle() {
     if(curChoice != prevChoice) {
       curMode = modeMapData[k];
       zoom = (curMode & 1) > 0 ? zoomBase : 1;
-      if((curMode & 2) > 0) { // first line only
+      if((curMode & 2) > 0 && (curMode & 4) > 0) { // first line only
         j = 0;
-      }
-      if((curMode & 4) > 0) { // vertical sync
-        j = floor(floor(i / width) / zoom) * dataWidth;
-      }
-      if((curMode & 8) > 0) { // horizontal sync
-        j += (i % width);
+      } else {
+        if((curMode & 8) > 0 || (curMode & 16) > 0) { // vertical sync
+          j = floor(floor(i / width) / zoom) * dataWidth;
+        }
+        if((curMode & 32) > 0) { // horizontal sync
+          j += (i % width);
+        }
       }
     }
     j %= m;
@@ -165,7 +166,7 @@ function createSingle() {
 }
 
 function saturate() {
-  buildTriangleField(blendMap, 24, random(128, 1024));
+  buildTriangleField(blendMap, 160, random(16, 1024));
   var baseImageData = getImageData(base);
   var blendMapImageData = getImageData(blendMap);  
   var baseData = baseImageData.data;
@@ -198,24 +199,38 @@ function saturate() {
     //hue = 255 * six / 6;
     //saturation = 255 * range / max;
     sixInt = six|0;
-    sixFrac = six - sixInt;
-    saturationNorm = 1;//mode / 10;
-    pv = ((1 - saturationNorm) * max);
-    qv = ((1 - saturationNorm * sixFrac) * max);
-    tv = ((1 - saturationNorm * (1 - sixFrac)) * max);
-    switch(sixInt) {
-      case 0: r = max, g = tv, b = pv; break; // r
-      case 1: r = qv, g = max, b = pv; break; // g
-      case 2: r = pv, g = max, b = tv; break; // g
-      case 3: r = pv, g = qv, b = max; break; // b
-      case 4: r = tv, g = pv, b = max; break; // b
-      default: r = max, g = pv, b = qv; // r
+    mode = blendMapData[k];
+    if(mode < 100) {
+      sixFrac = six - sixInt;
+      saturationNorm = mode / 100;
+      pv = ((1 - saturationNorm) * max);
+      qv = ((1 - saturationNorm * sixFrac) * max);
+      tv = ((1 - saturationNorm * (1 - sixFrac)) * max);
+      switch(sixInt) {
+        case 0: r = max, g = tv, b = pv; break; // r
+        case 1: r = qv, g = max, b = pv; break; // g
+        case 2: r = pv, g = max, b = tv; break; // g
+        case 3: r = pv, g = qv, b = max; break; // b
+        case 4: r = tv, g = pv, b = max; break; // b
+        default: r = max, g = pv, b = qv; // r
+      }
+    } else if(mode < 150) { // cmyk-leaning transform
+      switch(sixInt) {
+        case 0: r = max, g = 255, b = 255; break; // r
+        case 1: r = 255, g = max, b = 255; break; // g
+        case 2: r = 255, g = max, b = 255; break; // g
+        case 3: r = 255, g = 255, b = max; break; // b
+        case 4: r = 255, g = 255, b = max; break; // b
+        default: r = max, g = 255, b = 255; break; // r
+      }
+    } else { // desaturate
+      r = g = b = max;
     }
+
     baseData[k] = r;
     baseData[k+1] = g;
     baseData[k+2] = b;
   }
-  print(sixInt);
   getContext(base).putImageData(baseImageData, 0, 0);
 }
 
