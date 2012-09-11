@@ -6,7 +6,7 @@ var mouseX = 0, mouseY = 0;
 
 window.addEventListener("load", loadEvent);
 function loadEvent() {
-  canvas = document.g etElementById("Sketch");
+  canvas = document.getElementById("Sketch");
   canvas.addEventListener("mousemove", mouseMoveEvent);
   ctx = canvas.getContext("2d");
   width = canvas.width, height = canvas.height;
