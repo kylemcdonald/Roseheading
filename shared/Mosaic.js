@@ -14,8 +14,8 @@ function setupMosaic() {
   targetSmall = resizeArea(target, pw, ph);
   
   positions = findMosaic(baseSmall, targetSmall);
-  states = new Array(positions.length);
-  for(i in states) {
+  states = new Array(pn);
+  for(i = 0; i < pn; i++) {
     states[i] = 0;
   }
   
@@ -39,7 +39,7 @@ function drawMosaic() {
       curDst = piecePositions[pi];
       
       sx = px * sw, sy = py * sh;
-      dx = curDst.x * sw, dy = curDst.y * sh;
+      dx = curDst.x, dy = curDst.y;
       
       // copy sw x sh pixels
       si = 4 * (sy * width + sx);

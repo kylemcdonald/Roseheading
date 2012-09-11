@@ -30,7 +30,7 @@ function mouseMoveEvent(e) {
   var offset = findOffset(canvas);
   mouseX = e.pageX - offset.x;
   mouseY = e.pageY - offset.y;
-  if(typeof(mouseMoved) != "undefined") mouseMoved();
+  if(typeof mouseMoved != "undefined") mouseMoved();
 }
 
 function loop() {
@@ -74,8 +74,8 @@ function print(msg) {
 }
 
 function random(a, b) {
-  if(typeof(a)==='undefined') return Math.random();
-  if(typeof(b)==='undefined') return Math.random() * a;
+  if(typeof a === 'undefined') return Math.random();
+  if(typeof b === 'undefined') return Math.random() * a;
   return Math.random() * (b - a) + a;
 }
 
@@ -96,19 +96,19 @@ function abs(x) {
 }
 
 function pick(x) {
-  if(typeof(x)==='undefined') return Math.random() > .5;
+  if(typeof x === 'undefined') return Math.random() > .5;
   var result = random(x)|0;
   return result < x ? result : x;
 }
 
 function fill(brightness, ctx) {
-  if(typeof(ctx)=='undefined') ctx = this.ctx;
+  if(typeof ctx === 'undefined') ctx = this.ctx;
   brightness |= 0;
   ctx.strokeStyle = ctx.fillStyle = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
 }
 
 function triangle(ax, ay, bx, by, cx, cy, ctx) {
-  if(typeof(ctx)=='undefined') ctx = this.ctx;
+  if(typeof ctx === 'undefined') ctx = this.ctx;
   ctx.beginPath();
   ctx.moveTo(ax|0, ay|0);
   ctx.lineTo(bx|0, by|0);
@@ -141,8 +141,8 @@ function imageToRaw(src) {
 }
 
 function imageToCanvas(src, width, height) {
-  if(typeof(width)==='undefined') width = src.width;
-  if(typeof(height)==='undefined') height = src.height;
+  if(typeof width === 'undefined') width = src.width;
+  if(typeof height === 'undefined') height = src.height;
   buffer = createCanvas(width, height);
   buffer.getContext('2d').drawImage(src, 0, 0, width, height);
   return buffer;

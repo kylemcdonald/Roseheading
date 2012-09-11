@@ -7,7 +7,7 @@ var moveRadius = 16; // blocks
 var moveTime = 2000;
 
 function setup() {
-  //frameRate = 60;
+  //frameRate = 10;//60;
   base = imageToCanvas(baseImage);
   target = imageToCanvas(targetImage);
   setupMosaic();
@@ -54,9 +54,9 @@ function getPiecePositions() {
     for (x = 0; x < pw; x++) {
       cur = positions[k];
       cy = floor(cur / pw), cx = cur - (cy * pw);
-      /*
-      sx = cx * sw, sy = cy * sh;
-      tx = x * sw, ty = y * sh;
+      
+      sx = x * sw, sy = y * sh;
+      tx = cx * sw, ty = cy * sh;
       timeDiff = constrain(curTime - states[cur], 0, moveTime);
       state = states[cur] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
       state = smoothStep(state);
@@ -70,11 +70,7 @@ function getPiecePositions() {
         ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
         ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
       }
-      //piecePositions[k] = {x:x, y:y};
-      //piecePositions[cur] = {x:tx, y:ty};
-      piecePositions[cur] = {x:ax, y:ay};
-      */
-      piecePositions[k] = {x:cx, y:cy};
+      piecePositions[k] = {x:ax, y:ay};
       k++;
     }
   }
