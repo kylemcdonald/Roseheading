@@ -21,7 +21,7 @@ function setup() {
 }
 
 function draw() {
-  createSingle();
+  generateBase();
   ctx.drawImage(base, 0, 0);
 }
 
@@ -35,8 +35,7 @@ function setupImageData() {
   }
 }
 
-var base, regionMap, modeMap, blendMap;
-var baseImageData, regionMapImageData, modeMapImageData, blendMapImageData;
+var base, regionMap, modeMap, blendMap;;
 function setupBaseGenerator() {
   base = createCanvas(width, height);
   regionMap = createCanvas(width, height);
@@ -45,7 +44,11 @@ function setupBaseGenerator() {
 }
 
 function generateBase() {
-  passes = pick(4);
+  passes = 1 + pick(2);
+  for(i = 0; i < passes; i++) {
+    createSingle();
+  }
+  saturate();
 }
 
 function createSingle() {
@@ -53,10 +56,10 @@ function createSingle() {
   buildTriangleField(modeMap, 255, random(8, 64));
   buildTriangleField(blendMap, 4, random(32, 512));
   
-  baseImageData = getImageData(base);
-  regionMapImageData = getImageData(regionMap);
-  modeMapImageData = getImageData(modeMap);
-  blendMapImageData = getImageData(blendMap);
+  var baseImageData = getImageData(base);
+  var regionMapImageData = getImageData(regionMap);
+  var modeMapImageData = getImageData(modeMap);
+  var blendMapImageData = getImageData(blendMap);
   
   var m = dataWidth * dataHeight;
   var n = width * height;
@@ -74,7 +77,7 @@ function createSingle() {
   var allOpaque = (frameCount == 0);
   
   var ar, ag, ab, br, bg, bb, cr, cg, cb, f;
-  for(i = 0; i < n; i++) {
+  for(i = 0; i < n; i++, k+=4) {
     curChoice = regionMapData[k] % images.length;
     
     if(zoom == 1) {
@@ -156,10 +159,63 @@ function createSingle() {
     baseData[k+3] = 255;
     
     prevChoice = curChoice;
-    
-    k += 4;
   }
   
+  getContext(base).putImageData(baseImageData, 0, 0);
+}
+
+function saturate() {
+  buildTriangleField(blendMap, 24, random(128, 1024));
+  var baseImageData = getImageData(base);
+  var blendMapImageData = getImageData(blendMap);  
+  var baseData = baseImageData.data;
+  var blendMapData = blendMapImageData.data;
+  var n = width * height;
+  var i, k = 0;
+  var r, g, b, hue, saturation;
+  var max, min;
+  var six, sixInt, sixFrac, saturationNorm, range;
+  var pv, qv, tv;
+  for(i = 0; i < n; i++, k+=4) {
+    r = baseData[k], g = baseData[k+1], b = baseData[k+2];
+    max = r, min = r;
+    if(g > max) max = g;
+    if(b > max) max = b;
+    if(g < min) min = g;
+    if(b < min) min = b;
+    if(min == max) continue; // ignore grays   
+    range = max - min;
+    if(r == max) {
+      six = (g - b) / range;
+      if(six < 0) {
+        six += 6;
+      }
+    } else if (g == max) {
+      six = 2 + (b - r) / range;
+    } else {
+      six = 4 + (r - g) / range;
+    }
+    //hue = 255 * six / 6;
+    //saturation = 255 * range / max;
+    sixInt = six|0;
+    sixFrac = six - sixInt;
+    saturationNorm = 1;//mode / 10;
+    pv = ((1 - saturationNorm) * max);
+    qv = ((1 - saturationNorm * sixFrac) * max);
+    tv = ((1 - saturationNorm * (1 - sixFrac)) * max);
+    switch(sixInt) {
+      case 0: r = max, g = tv, b = pv; break; // r
+      case 1: r = qv, g = max, b = pv; break; // g
+      case 2: r = pv, g = max, b = tv; break; // g
+      case 3: r = pv, g = qv, b = max; break; // b
+      case 4: r = tv, g = pv, b = max; break; // b
+      default: r = max, g = pv, b = qv; // r
+    }
+    baseData[k] = r;
+    baseData[k+1] = g;
+    baseData[k+2] = b;
+  }
+  print(sixInt);
   getContext(base).putImageData(baseImageData, 0, 0);
 }
 
