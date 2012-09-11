@@ -2,15 +2,35 @@ var canvas, ctx;
 var width, height;
 var interval;
 var frameRate = 1000, frameCount = 0;
+var mouseX = 0, mouseY = 0;
 
-window.addEventListener("load", init);
-function init() {
-  canvas = document.getElementById("Sketch");
+window.addEventListener("load", loadEvent);
+function loadEvent() {
+  canvas = document.g etElementById("Sketch");
+  canvas.addEventListener("mousemove", mouseMoveEvent);
   ctx = canvas.getContext("2d");
   width = canvas.width, height = canvas.height;
   setupStats();
   setup();
   interval = setInterval(loop, 1000 / frameRate);
+}
+
+function findOffset(obj) {
+  var curX = curY = 0;
+  if (obj.offsetParent) {
+    do {
+      curX += obj.offsetLeft;
+      curY += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+  return {x:curX, y:curY};
+  }
+}
+
+function mouseMoveEvent(e) {
+  var offset = findOffset(canvas);
+  mouseX = e.pageX - offset.x;
+  mouseY = e.pageY - offset.y;
+  if(typeof(mouseMoved) != "undefined") mouseMoved();
 }
 
 function loop() {

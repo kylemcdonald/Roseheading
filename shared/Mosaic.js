@@ -2,7 +2,7 @@ var base, target;
 var baseSmall, targetSmall;
 var screenImageData;
 var baseCanvas, baseImageData;
-var positions;
+var positions, states;
 var pw, ph, pn, pieceSize = 10;
 
 function setupMosaic() {
@@ -14,6 +14,10 @@ function setupMosaic() {
   targetSmall = resizeArea(target, pw, ph);
   
   positions = findMosaic(baseSmall, targetSmall);
+  states = new Array(positions.length);
+  for(i in states) {
+    states[i] = 0;
+  }
   
   screenImageData = ctx.createImageData(width, height);
   baseCanvas = imageToCanvas(base);
