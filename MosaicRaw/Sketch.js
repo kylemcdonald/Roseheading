@@ -1,5 +1,12 @@
+var baseImage = new Image();
+baseImage.src = "img/base.png";
+var targetImage = new Image();
+targetImage.src = "img/target.png";
+
 function setup() {
   //frameRate = 60;
+  base = imageToCanvas(baseImage);
+  target = imageToCanvas(targetImage);
   setupMosaic();
 }
 

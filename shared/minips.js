@@ -17,7 +17,7 @@ function loop() {
   stats.begin();
   draw();
   stats.end();
-  frameCount++
+  frameCount++;
 }
 
 var stats;

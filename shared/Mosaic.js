@@ -1,8 +1,4 @@
-var base = new Image();
-base.src = "img/base.png";
-var target = new Image();
-target.src = "img/target.png";
-
+var base, target;
 var baseSmall, targetSmall;
 var screenImageData;
 var baseCanvas, baseImageData;
@@ -10,8 +6,8 @@ var positions;
 var pw, ph, pn, pieceSize = 10;
 
 function setupMosaic() {
-  pw = Math.floor(width / pieceSize);
-  ph = Math.floor(height / pieceSize);
+  pw = floor(width / pieceSize);
+  ph = floor(height / pieceSize);
   pn = pw * ph;
   
   baseSmall = resizeArea(base, pw, ph);
@@ -25,8 +21,8 @@ function setupMosaic() {
 }
 
 function drawMosaic() {
-  sw = Math.floor(width / pw);
-  sh = Math.floor(height / ph);
+  sw = floor(width / pw);
+  sh = floor(height / ph);
   pi = 0;
   src = baseImageData.data;
   dst = screenImageData.data;
@@ -36,7 +32,7 @@ function drawMosaic() {
   for (py = 0; py < ph; py++) {
     for (px = 0; px < pw; px++) {
       cur = positions[pi];
-      cy = Math.floor(cur / pw);
+      cy = floor(cur / pw);
       cx = cur - (cy * pw);
       sx = cx * sw, sy = cy * sh;
       dx = px * sw, dy = py * sh;
@@ -61,13 +57,12 @@ function drawMosaic() {
   ctx.putImageData(screenImageData, 0, 0);
 }
 
-// resize an Image into an HTMLCanvasElement using area averaging
+// resize one canvas into another using area averaging
 function resizeArea(src, dw, dh) {
   sw = src.width, sh = src.height;
-  w = Math.floor(sw / dw), h = Math.floor(sh / dh);
-  srcCanvas = imageToCanvas(src);
+  w = floor(sw / dw), h = floor(sh / dh);
   dstCanvas = createCanvas(dw, dh);
-  srcImageData = getImageData(srcCanvas);
+  srcImageData = getImageData(src);
   dstImageData = dstCanvas.getContext('2d').createImageData(dw, dh);
   srcData = srcImageData.data;
   dstData = dstImageData.data;
