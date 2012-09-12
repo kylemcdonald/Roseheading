@@ -1,5 +1,6 @@
-var translationLatin = ["adatok","andmed","dades","dados","Daten","dati","datos","datu","données","gegevens","podatkov","tiedot","údaje","veri"];
-var translationOther = ["dữ liệu","duomenų","údaje","البيانات","δεδομένα","дані","данни","данные","נתונים","داده ها","डेटा","ข้อมูล","데이터","データ","数据"];
+var translationLatin = ["datu","verilənlər","podatak","dada","datumo","datu","donnée","podatak","dato","gögn","dati","duomenys","adat","gegeven","dados","dată","podatek","podatak","datos","veri","dữ liệu"];
+var translationOther = ["δεδομένα","даныя","данни","数据","데이터","بيانات","উপাত্ত","داده","дерек","נתונים","берилиштер","податок","विदा","データ","ыҥпале","дата","данные","اعداد","دراوە","податак","தரவு","ข้อมูล","дані","معطیات","数据","דאטן"];
+
 function randomTranslation() {
   var mode = random(5);
   if(mode < 3) return translationOther[pick(translationOther.length)];
