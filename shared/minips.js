@@ -3,6 +3,7 @@ var canvas, ctx,
   interval,
   frameRate = 1000, frameCount = 0,
   mouseX = 0, mouseY = 0,
+  fullscreen = false,
   stats, showStats = false;
 
 window.addEventListener('load', loadEvent);
@@ -10,11 +11,37 @@ function loadEvent() {
   canvas = document.getElementById('Sketch');
   canvas.addEventListener('mousemove', mouseMoveEvent);
   canvas.addEventListener('click', mouseClickEvent);
+  setupFullscreen();
   ctx = canvas.getContext('2d');
   width = canvas.width, height = canvas.height;
   setup();
   if(showStats) setupStats();
   interval = setInterval(loop, 1000 / frameRate);
+}
+
+function setupFullscreen() {
+  var fullscreenBtn = document.getElementById("fullscreen-button");
+  if(fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", function (evt) {
+      if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+      }
+      else if (canvas.mozRequestFullScreen) {
+        canvas.mozRequestFullScreen();
+      }
+      else if (canvas.webkitRequestFullScreen) {
+        canvas.webkitRequestFullScreen();
+      }
+    }, false);
+  }
+  document.addEventListener("fullscreenchange", function(){fullscreenChangeEvent(document.fullscreen)}, false);
+  document.addEventListener("mozfullscreenchange", function(){fullscreenChangeEvent(document.mozFullScreen)}, false);
+  document.addEventListener("webkitfullscreenchange", function(){fullscreenChangeEvent(document.webkitIsFullScreen)}, false);
+}
+
+function fullscreenChangeEvent(fullscreen) {
+  this.fullscreen = fullscreen;
+  if(typeof fullscreenChange != 'undefined') fullscreenChange();
 }
 
 function findOffset(obj) {

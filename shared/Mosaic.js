@@ -3,7 +3,7 @@ var base, target,
   screenImageData,
   baseCanvas, baseImageData,
   positions, states,
-  pw, ph, pn, pieceSize = 10,
+  pw, ph, pn, pieceSize = 10,//16,
   moveRadius = 16,
   moveTime = 2000,
   piecePositions,
@@ -31,14 +31,14 @@ function setupMosaic() {
 }
 
 function drawMosaic() {
-  sw = floor(width / pw);
-  sh = floor(height / ph);
-  pi = 0;
-  src = baseImageData.data;
-  dst = screenImageData.data;
-  stepSize = 4 * (width - sw);
-  
-  var curDst, sx, sy, dx, dy, si, di, xx, yy;
+  var sw = floor(width / pw),
+    sh = floor(height / ph),
+    pi = 0,
+    src = baseImageData.data,
+    dst = screenImageData.data,
+    stepSize = 4 * (width - sw),
+    curDst, py, px, sx, sy, dx, dy, si, di, xx, yy;
+    
   for (py = 0; py < ph; py++) {
     for (px = 0; px < pw; px++) {
       curDst = piecePositions[pi];
@@ -63,6 +63,7 @@ function drawMosaic() {
       pi++;
     }
   }
+  
   ctx.putImageData(screenImageData, 0, 0);
 }
 
@@ -100,7 +101,7 @@ function resizeArea(src, dw, dh) {
       i += 4;
     }
   }
-  dstCanvas.getContext('2d').putImageData(dstImageData, 0, 0);
+  getContext(dstCanvas).putImageData(dstImageData, 0, 0);
   return dstCanvas;
 }  
 

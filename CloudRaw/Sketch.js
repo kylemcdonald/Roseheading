@@ -25,3 +25,16 @@ function regenerate() {
   generateTarget();
   setupMosaic();
 }
+
+function fullscreenChange() {
+/*
+  if(fullscreen) {
+    canvas.width = document.width;
+    canvas.height = document.height;
+  } else {
+    canvas.width = 950;
+    canvas.height = 540;
+  }
+  // need to reallocate screenImageData
+  */
+}
