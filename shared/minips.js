@@ -160,3 +160,22 @@ function getImageData(canvas) {
 function getContext(canvas) {
   return canvas.getContext('2d');
 }
+
+function background() {
+  ctx.clearRect(0, 0, width, height);
+}
+
+function setupText() {
+  ctx.font = '100px sans-serif';
+  textAlign('center', 'middle');
+}
+
+function drawCenteredText(text, textWidth) {
+  var metrics = ctx.measureText(text);
+  var scale = textWidth / metrics.width;
+  ctx.save();
+  ctx.translate(width / 2, height / 2);
+  ctx.scale(scale, scale);
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+}

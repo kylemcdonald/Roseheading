@@ -1,10 +1,18 @@
+var translationLatin = ["adatok","andmed","dades","dados","Daten","dati","datos","datu","données","gegevens","podatkov","tiedot","údaje","veri"];
+var translationOther = ["dữ liệu","duomenų","údaje","البيانات","δεδομένα","дані","данни","данные","נתונים","داده ها","डेटा","ข้อมูล","데이터","データ","数据"];
+function randomTranslation() {
+  var mode = random(5);
+  if(mode < 3) return translationOther[pick(translationOther.length)];
+  if(mode < 4) return translationLatin[pick(translationLatin.length)];
+  return "data";
+}
+
 function setup() {
-  ctx.font = '150px sans-serif';
-  textAlign('center', 'middle');
+  frameRate = 2;
+  setupText();
 }
 
 function draw() {
-  str = "ข้อมูล";
-  metrics = ctx.measureText(str);
-  ctx.fillText(str, width / 2, height / 2);
+  background();
+  drawCenteredText(randomTranslation(), 750);
 }
