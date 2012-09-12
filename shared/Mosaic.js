@@ -181,12 +181,13 @@ function updateMosaic() {
   if(curTime - lastMouseMoved > idleTime) {
     trigger(pick(pw), pick(ph));
   }
-    
+  
   if(lastBackwards && backwardsDiff > moveTime) {
     backwards = false;
     for(i = 0; i < states.length; i++) {
       states[i] = 0;
     }
+    if(typeof regenerate != 'undefined') regenerate();
   }
   lastBackwards = backwards;
   

@@ -1,5 +1,5 @@
 function setup() {
-  frameRate = .5;//60;
+  frameRate = 2;//60;
   setupBaseGenerator();
 }
 

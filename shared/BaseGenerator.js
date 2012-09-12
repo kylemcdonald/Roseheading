@@ -12,16 +12,31 @@ var files = [
 var images = loadImages(files);
 var dataWidth, dataHeight;
 
+function flipnib(x) {return ((x&15)<<4)|((x&240)>>4);}
+function flipopp(x) {return ((x&170)>>1)|((x&85)<<1);}
+function decode(d) {
+  var r, g, b, k, i = 0, n = 4 * dataWidth * dataHeight;
+  while(i < n) {
+    k = (i>>2)%256;
+    d[i] = k^flipopp(k^flipnib(k^d[i++]));
+    d[i] = k^flipopp(k^flipnib(k^d[i++]));
+    d[i] = k^flipopp(k^flipnib(k^d[i++]));
+    i++;
+  }
+}
+
 // because these are all the same size, we could use a single
 // off-screen canvas instead of one per image.
-var imagesData = new Array();
-var base, regionMap, modeMap, blendMap;;
+var imagesData, base, regionMap, modeMap, blendMap;;
 function setupBaseGenerator() {
   dataWidth = images[0].width;
   dataHeight = images[0].height;
   imagesData = new Array(images.length);
   for(i in images) {
     imagesData[i] = imageToRaw(images[i]);
+    if(files[i].indexOf("noise") != -1) {
+      decode(imagesData[i]);
+    }
   }
   
   base = createCanvas(width, height);
@@ -50,7 +65,7 @@ function createSingle() {
   
   var m = dataWidth * dataHeight;
   var n = width * height;
-  var curChoice = 0, prevChoice = 0, curMode = 0;
+  var curChoice = 0, prevChoice = -1, curMode = 0;
   var zoom = 1, zoomBase = floor(pow(2, random(1, 6)));
   var badSync = random() < .2;
   
@@ -225,7 +240,6 @@ function buildTriangleField(canvas, levels, side) {
   var ctx = getContext(canvas);
   ox = -random(side), oy = -random(side);
   py = oy, y = oy;
-  var nwx, nwy, nex, ney, swx, swy, sex, sey;
   while(py < height) {
     px = ox, x = ox;
     y += side;

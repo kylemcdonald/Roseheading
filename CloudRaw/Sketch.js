@@ -19,3 +19,9 @@ function generateTarget() {
   background(255, targetCtx);
   drawCenteredText(randomTranslation(), 750, targetCtx);
 }
+
+function regenerate() {
+  generateBase();
+  generateTarget();
+  setupMosaic();
+}
