@@ -3,6 +3,7 @@ var width, height;
 var interval;
 var frameRate = 1000, frameCount = 0;
 var mouseX = 0, mouseY = 0;
+var showStats = false;
 
 window.addEventListener("load", loadEvent);
 function loadEvent() {
@@ -10,7 +11,7 @@ function loadEvent() {
   canvas.addEventListener("mousemove", mouseMoveEvent);
   ctx = canvas.getContext("2d");
   width = canvas.width, height = canvas.height;
-  setupStats();
+  if(showStats) setupStats();
   setup();
   interval = setInterval(loop, 1000 / frameRate);
 }
@@ -34,9 +35,9 @@ function mouseMoveEvent(e) {
 }
 
 function loop() {
-  stats.begin();
+  if(showStats) stats.begin();
   draw();
-  stats.end();
+  if(showStats) stats.end();
   frameCount++;
 }
 

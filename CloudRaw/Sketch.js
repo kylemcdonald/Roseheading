@@ -1,9 +1,8 @@
-var baseImage = new Image();
-baseImage.src = "data/base.png";
-
 function setup() {
   //frameRate = 120;
-  base = imageToCanvas(baseImage);
+  
+  setupBaseGenerator();
+  generateBase();
   
   target = createCanvas(width, height);
   targetCtx = getContext(target);
@@ -19,6 +18,6 @@ function draw() {
   
   updateMosaic();
   drawMosaic();
-  ctx.drawImage(baseSmall, 0, 0);
-  ctx.drawImage(targetSmall, pw, 0);
+  //ctx.drawImage(baseSmall, 0, 0);
+  //ctx.drawImage(targetSmall, pw, 0);
 }
