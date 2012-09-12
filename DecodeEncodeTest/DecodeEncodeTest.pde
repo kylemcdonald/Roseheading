@@ -1,14 +1,18 @@
 void setup() {
-  size(256, 256);
-  PImage img = loadImage("building.png");
-  //encode(img);
+  PImage img = loadImage("stacks.png");
+  
+  encode(img);
   //decode(img);
+  
   img.save("encoded.png");
+  
+  size(img.width, img.height);
   image(img, 0, 0);
 }
 
 void encode(PImage img) {
-  for (int i = 0; i < 256*256; i++) {
+  int n = img.width * img.height;
+  for (int i = 0; i < n; i++) {
     color cur = img.pixels[i];
     int r = int(red(cur));
     int g = int(green(cur));
@@ -22,7 +26,8 @@ void encode(PImage img) {
 }
 
 void decode(PImage img) {
-  for (int i = 0; i < 256*256; i++) {
+  int n = img.width * img.height;
+  for (int i = 0; i < n; i++) {
     color cur = img.pixels[i];
     int k = i % 256;
     int r = int(red(cur));
