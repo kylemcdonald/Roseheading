@@ -64,13 +64,18 @@ function constrain(x, min, max) {
   return x;
 }
 
+function print(msg) {
+  document.getElementById("debug").innerHTML = msg;
+}
+
+function textAlign(horizontal, vertical) {
+  ctx.textAlign = horizontal;
+  ctx.textBaseline = vertical;
+}
+
 function dist(ax, ay, bx, by) {
   dx = bx - ax, dy = by - ay;
   return Math.sqrt(dx * dx + dy * dy);
-}
-
-function print(msg) {
-  document.getElementById("debug").innerHTML = msg;
 }
 
 function random(a, b) {

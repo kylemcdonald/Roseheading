@@ -4,7 +4,7 @@ var targetImage = new Image();
 targetImage.src = "img/target.png";
 
 function setup() {
-  //frameRate = 10;//60;
+  //frameRate = 120;
   base = imageToCanvas(baseImage);
   target = imageToCanvas(targetImage);
   setupMosaic();
