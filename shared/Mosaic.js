@@ -1,7 +1,8 @@
 var base, target,
   baseSmall, targetSmall,
   screenImageData,
-  baseCanvas, baseImageData,
+  baseImageData, altImageData,
+  altStates,
   positions, states,
   pw, ph, pn, pieceSize = 10,//16,
   moveRadius = 16,
@@ -20,14 +21,19 @@ function setupMosaic() {
   
   positions = findMosaic(baseSmall, targetSmall);
   states = new Array(pn);
+  altStates = new Array(pn);
   for(i = 0; i < pn; i++) {
     states[i] = 0;
   }
   piecePositions = new Array(pn);
   
   screenImageData = ctx.createImageData(width, height);
-  baseCanvas = imageToCanvas(base);
-  baseImageData = getImageData(baseCanvas);
+  baseImageData = getImageData(base);
+  updateAltImageData();
+}
+
+function updateAltImageData() {
+  altImageData = getImageData(base);
 }
 
 function drawMosaic() {
@@ -35,13 +41,15 @@ function drawMosaic() {
     sh = floor(height / ph),
     pi = 0,
     src = baseImageData.data,
+    alt = altImageData.data,
     dst = screenImageData.data,
     stepSize = 4 * (width - sw),
-    curDst, py, px, sx, sy, dx, dy, si, di, xx, yy;
+    curSrc, curDst, py, px, sx, sy, dx, dy, si, di, xx, yy;
     
   for (py = 0; py < ph; py++) {
     for (px = 0; px < pw; px++) {
       curDst = piecePositions[pi];
+      curSrc = altStates[pi] ? alt : src;
       
       sx = px * sw, sy = py * sh;
       dx = curDst.x, dy = curDst.y;
@@ -51,9 +59,9 @@ function drawMosaic() {
       di = 4 * (dy * width + dx);
       for(yy = 0; yy < sh; yy++) {
         for(xx = 0; xx < sw; xx++) {
-          dst[di++] = src[si++];
-          dst[di++] = src[si++];
-          dst[di++] = src[si++];
+          dst[di++] = curSrc[si++];
+          dst[di++] = curSrc[si++];
+          dst[di++] = curSrc[si++];
           dst[di++] = 255; si++;
         }
         si += stepSize;
@@ -166,6 +174,7 @@ function mouseMoved() {
 
 function mousePressed() {
   if(!backwards) {
+    if(typeof beginRewind != 'undefined') beginRewind();
     backwards = true;
     backwardsStart = millis();
   }
@@ -188,7 +197,7 @@ function updateMosaic() {
     for(i = 0; i < states.length; i++) {
       states[i] = 0;
     }
-    if(typeof regenerate != 'undefined') regenerate();
+    if(typeof endRewind != 'undefined') endRewind();
   }
   lastBackwards = backwards;
   
@@ -211,10 +220,12 @@ function updateMosaic() {
       if (dx > dy) {
         ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx));
         ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy));
+        altStates[k] = state < dx;
       } 
       else {
         ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
         ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
+        altStates[k] = state < dy;
       }
       piecePositions[k] = {x:ax, y:ay};
       k++;

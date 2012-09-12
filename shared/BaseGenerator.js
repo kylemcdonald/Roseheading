@@ -11,6 +11,7 @@ var files = [
 ];
 var images = loadImages(files);
 var dataWidth, dataHeight;
+var allOpaque = true;
 
 function flipnib(x) {return ((x&15)<<4)|((x&240)>>4);}
 function flipopp(x) {return ((x&170)>>1)|((x&85)<<1);}
@@ -46,7 +47,7 @@ function setupBaseGenerator() {
 }
 
 function generateBase() {
-  passes = 1 + pick(2);
+  passes = 3;
   for(i = 0; i < passes; i++) {
     createSingle();
   }
@@ -76,7 +77,6 @@ function createSingle() {
   
   var i, j = 0, k = 0;
   var blendMode;
-  var allOpaque = (frameCount == 0);
   
   var ar, ag, ab, br, bg, bb, cr, cg, cb, f;
   for(i = 0; i < n; i++, k+=4) {
@@ -165,6 +165,9 @@ function createSingle() {
   }
   
   getContext(base).putImageData(baseImageData, 0, 0);
+  
+  // only make the first one opaque
+  allOpaque = false;
 }
 
 function saturate() {

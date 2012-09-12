@@ -20,8 +20,12 @@ function generateTarget() {
   drawCenteredText(randomTranslation(), 750, targetCtx);
 }
 
-function regenerate() {
+function beginRewind() {
   generateBase();
+  updateAltImageData();
+}
+
+function endRewind() {
   generateTarget();
   setupMosaic();
 }

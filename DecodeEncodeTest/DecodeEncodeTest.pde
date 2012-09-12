@@ -1,7 +1,7 @@
 void setup() {
   size(256, 256);
-  PImage img = loadImage("gpunoise.png");
-  encode(img);
+  PImage img = loadImage("building.png");
+  //encode(img);
   //decode(img);
   img.save("encoded.png");
   image(img, 0, 0);
