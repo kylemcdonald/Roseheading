@@ -4,6 +4,10 @@ var screenImageData;
 var baseCanvas, baseImageData;
 var positions, states;
 var pw, ph, pn, pieceSize = 10;
+var moveRadius = 16;
+var moveTime = 2000;
+
+var piecePositions;
 
 function setupMosaic() {
   pw = floor(width / pieceSize);
@@ -18,6 +22,7 @@ function setupMosaic() {
   for(i = 0; i < pn; i++) {
     states[i] = 0;
   }
+  piecePositions = new Array(pn);
   
   screenImageData = ctx.createImageData(width, height);
   baseCanvas = imageToCanvas(base);
@@ -31,7 +36,6 @@ function drawMosaic() {
   src = baseImageData.data;
   dst = screenImageData.data;
   stepSize = 4 * (width - sw);
-  piecePositions = getPiecePositions();
   
   var curDst, sx, sy, dx, dy, si, di, xx, yy;
   for (py = 0; py < ph; py++) {
@@ -135,4 +139,59 @@ function findMosaic(src, dst) {
     positions[flatSrc[i]] = flatDst[i];
   }  
   return positions;
+}
+
+function trigger(x, y) {
+  var i = y * pw + x;
+  if (states[i] == 0) {
+    states[i] = millis();
+  }
+}
+
+function mouseMoved() {
+  var x = mouseX / pieceSize, y = mouseY / pieceSize;
+  if (x >= 0 && y >= 0 && x < pw && y < ph) {
+    for (i = 0; i < pw; i++) {
+      for (j = 0; j < ph; j++) {
+        if (dist(i, j, x, y) < moveRadius * random(.1, 1)) {
+          trigger(i, j);
+        }
+      }
+    }
+  }
+}
+
+function updateMosaic() {
+  var w = width, h = height;
+  var sw = floor(w / pw), sh = floor(h / ph);
+  var curTime = millis();
+  var k = 0, n = pw * ph;
+  
+  var x, y, cur, cy, cx, sx, sy, tx, ty, ax, ay;
+  var timeDiff, state, dx, dy;
+  
+  for (y = 0; y < ph; y++) {
+    for (x = 0; x < pw; x++) {
+      cur = positions[k];
+      cy = floor(cur / pw), cx = cur - (cy * pw);
+      
+      sx = x * sw, sy = y * sh;
+      tx = cx * sw, ty = cy * sh;
+      timeDiff = constrain(curTime - states[k], 0, moveTime);
+      state = states[k] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
+      state = smoothStep(state);
+      dx = floor(abs(tx - sx)), dy = floor(abs(ty - sy));
+      state *= (dx + dy);
+      if (dx > dy) {
+        ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state, 0, dx) / dx));
+        ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state - dx, 0, dy) / dy));
+      } 
+      else {
+        ax = floor(dx == 0 ? tx : lerp(sx, tx, constrain(state - dy, 0, dx) / dx));
+        ay = floor(dy == 0 ? ty : lerp(sy, ty, constrain(state, 0, dy) / dy));
+      }
+      piecePositions[k] = {x:ax, y:ay};
+      k++;
+    }
+  }
 }
