@@ -68,11 +68,6 @@ function print(msg) {
   document.getElementById("debug").innerHTML = msg;
 }
 
-function textAlign(horizontal, vertical) {
-  ctx.textAlign = horizontal;
-  ctx.textBaseline = vertical;
-}
-
 function dist(ax, ay, bx, by) {
   dx = bx - ax, dy = by - ay;
   return Math.sqrt(dx * dx + dy * dy);
@@ -106,10 +101,14 @@ function pick(x) {
   return result < x ? result : x;
 }
 
+function rgb(brightness) {
+  return 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
+}
+
 function fill(brightness, ctx) {
   if(typeof ctx === 'undefined') ctx = this.ctx;
   brightness |= 0;
-  ctx.strokeStyle = ctx.fillStyle = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
+  ctx.strokeStyle = ctx.fillStyle = rgb(brightness);
 }
 
 function triangle(ax, ay, bx, by, cx, cy, ctx) {
@@ -161,21 +160,10 @@ function getContext(canvas) {
   return canvas.getContext('2d');
 }
 
-function background() {
-  ctx.clearRect(0, 0, width, height);
-}
-
-function setupText() {
-  ctx.font = '100px sans-serif';
-  textAlign('center', 'middle');
-}
-
-function drawCenteredText(text, textWidth) {
-  var metrics = ctx.measureText(text);
-  var scale = textWidth / metrics.width;
+function background(brightness, ctx) {
+  if(typeof ctx === 'undefined') ctx = this.ctx;
   ctx.save();
-  ctx.translate(width / 2, height / 2);
-  ctx.scale(scale, scale);
-  ctx.fillText(text, 0, 0);
+  ctx.fillStyle = rgb(brightness);
+  ctx.fillRect(0, 0, width, height);
   ctx.restore();
 }
