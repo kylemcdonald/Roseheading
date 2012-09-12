@@ -70,7 +70,7 @@ function constrain(x, min, max) {
 }
 
 function print(msg) {
-  document.getElementById('debug').innerHTML = msg;
+  console.log(msg);
 }
 
 function dist(ax, ay, bx, by) {

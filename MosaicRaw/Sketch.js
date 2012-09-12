@@ -12,9 +12,7 @@ function setup() {
   showStats = true;
 }
 
-function draw() {
-  trigger(pick(pw), pick(ph));
-  
+function draw() {  
   updateMosaic();
   drawMosaic();
   ctx.drawImage(baseSmall, 0, 0);

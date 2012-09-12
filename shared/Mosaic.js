@@ -1,13 +1,14 @@
-var base, target;
-var baseSmall, targetSmall;
-var screenImageData;
-var baseCanvas, baseImageData;
-var positions, states;
-var pw, ph, pn, pieceSize = 10;
-var moveRadius = 16;
-var moveTime = 2000;
-
-var piecePositions;
+var base, target,
+  baseSmall, targetSmall,
+  screenImageData,
+  baseCanvas, baseImageData,
+  positions, states,
+  pw, ph, pn, pieceSize = 10,
+  moveRadius = 16,
+  moveTime = 2000,
+  piecePositions,
+  backwards = false, lastBackwards = false, backwardsStart = 0,
+  idleTime = 4000, lastMouseMoved = millis();
 
 function setupMosaic() {
   pw = floor(width / pieceSize);
@@ -159,19 +160,35 @@ function mouseMoved() {
       }
     }
   }
+  lastMouseMoved = millis();
 }
 
 function mousePressed() {
+  if(!backwards) {
+    backwards = true;
+    backwardsStart = millis();
+  }
 }
 
 function updateMosaic() {
-  var w = width, h = height;
-  var sw = floor(w / pw), sh = floor(h / ph);
-  var curTime = millis();
-  var k = 0, n = pw * ph;
-  
-  var x, y, cur, cy, cx, sx, sy, tx, ty, ax, ay;
-  var timeDiff, state, dx, dy;
+  var w = width, h = height,
+    sw = floor(w / pw), sh = floor(h / ph),
+    curTime = millis(),
+    k = 0, x, y, cur, cy, cx, sx, sy, tx, ty, ax, ay,
+    timeDiff, state, dx, dy,
+    backwardsDiff = curTime - backwardsStart;
+    
+  if(curTime - lastMouseMoved > idleTime) {
+    trigger(pick(pw), pick(ph));
+  }
+    
+  if(lastBackwards && backwardsDiff > moveTime) {
+    backwards = false;
+    for(i = 0; i < states.length; i++) {
+      states[i] = 0;
+    }
+  }
+  lastBackwards = backwards;
   
   for (y = 0; y < ph; y++) {
     for (x = 0; x < pw; x++) {
@@ -180,7 +197,11 @@ function updateMosaic() {
       
       sx = x * sw, sy = y * sh;
       tx = cx * sw, ty = cy * sh;
-      timeDiff = constrain(curTime - states[k], 0, moveTime);
+      if(backwards) {
+        timeDiff = constrain(backwardsStart - states[k], 0, moveTime) - backwardsDiff;
+      } else {
+        timeDiff = constrain(curTime - states[k], 0, moveTime);
+      }
       state = states[k] == 0 ? 0 : constrain(timeDiff / moveTime, 0, 1);
       state = smoothStep(state);
       dx = floor(abs(tx - sx)), dy = floor(abs(ty - sy));
