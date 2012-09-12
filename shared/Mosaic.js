@@ -161,6 +161,9 @@ function mouseMoved() {
   }
 }
 
+function mousePressed() {
+}
+
 function updateMosaic() {
   var w = width, h = height;
   var sw = floor(w / pw), sh = floor(h / ph);

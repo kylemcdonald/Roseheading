@@ -1,18 +1,19 @@
-var canvas, ctx;
-var width, height;
-var interval;
-var frameRate = 1000, frameCount = 0;
-var mouseX = 0, mouseY = 0;
-var showStats = false;
+var canvas, ctx,
+  width, height,
+  interval,
+  frameRate = 1000, frameCount = 0,
+  mouseX = 0, mouseY = 0,
+  stats, showStats = false;
 
-window.addEventListener("load", loadEvent);
+window.addEventListener('load', loadEvent);
 function loadEvent() {
-  canvas = document.getElementById("Sketch");
-  canvas.addEventListener("mousemove", mouseMoveEvent);
-  ctx = canvas.getContext("2d");
+  canvas = document.getElementById('Sketch');
+  canvas.addEventListener('mousemove', mouseMoveEvent);
+  canvas.addEventListener('click', mouseClickEvent);
+  ctx = canvas.getContext('2d');
   width = canvas.width, height = canvas.height;
-  if(showStats) setupStats();
   setup();
+  if(showStats) setupStats();
   interval = setInterval(loop, 1000 / frameRate);
 }
 
@@ -31,7 +32,11 @@ function mouseMoveEvent(e) {
   var offset = findOffset(canvas);
   mouseX = e.pageX - offset.x;
   mouseY = e.pageY - offset.y;
-  if(typeof mouseMoved != "undefined") mouseMoved();
+  if(typeof mouseMoved != 'undefined') mouseMoved();
+}
+
+function mouseClickEvent(e) {
+  if(typeof mousePressed != 'undefined') mousePressed();
 }
 
 function loop() {
@@ -41,7 +46,6 @@ function loop() {
   frameCount++;
 }
 
-var stats;
 function setupStats() {
   stats = new Stats();
   stats.setMode(0);
@@ -66,7 +70,7 @@ function constrain(x, min, max) {
 }
 
 function print(msg) {
-  document.getElementById("debug").innerHTML = msg;
+  document.getElementById('debug').innerHTML = msg;
 }
 
 function dist(ax, ay, bx, by) {
@@ -140,8 +144,8 @@ function createCanvas(width, height) {
 }
 
 function imageToRaw(src) {
-  var canvas = imageToCanvas(src);
-  var imageData = getImageData(canvas);
+  var canvas = imageToCanvas(src),
+    imageData = getImageData(canvas);
   return imageData.data;
 }
 

@@ -9,6 +9,7 @@ function setup() {
   base = imageToCanvas(baseImage);
   target = imageToCanvas(targetImage);  
   setupMosaic();
+  showStats = true;
 }
 
 function draw() {
