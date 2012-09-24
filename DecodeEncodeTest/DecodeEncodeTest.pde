@@ -1,11 +1,8 @@
 void setup() {
   PImage img = loadImage("stacks.png");
-  
   encode(img);
-  //decode(img);
-  
-  img.save("encoded.png");
-  
+  img.save("encoded.jpg");  
+  decode(img);
   size(img.width, img.height);
   image(img, 0, 0);
 }

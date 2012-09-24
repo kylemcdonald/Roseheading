@@ -1,6 +1,6 @@
 function setup() {
   //frameRate = 120;
-  
+  showStats = true;
   setupBaseGenerator();
   generateBase();
   generateTarget();
