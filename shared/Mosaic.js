@@ -9,7 +9,8 @@ var base, target,
   moveTime = 2000,
   piecePositions,
   backwards = false, lastBackwards = false, backwardsStart = 0,
-  idleTime = 4000, lastMouseMoved = millis();
+  idleTime = 4000, lastMouseMoved = millis(),
+  completeness = 0, minRemaining = .8, maxRemaining = 16;
 
 function setupMosaic() {
   pw = floor(width / pieceSize);
@@ -155,6 +156,7 @@ function trigger(x, y) {
   var i = y * pw + x;
   if (states[i] == 0) {
     states[i] = millis();
+    completeness++;
   }
 }
 
@@ -170,9 +172,19 @@ function mouseMoved() {
     }
   }
   lastMouseMoved = millis();
+  
+  if(completeness + maxRemaining > states.length) {
+    goBackwards();
+  }
 }
 
 function mousePressed() {
+  if(completeness > minRemaining * states.length) {
+    goBackwards();
+  }
+}
+
+function goBackwards() {
   if(!backwards) {
     if(typeof beginRewind != 'undefined') beginRewind();
     backwards = true;
@@ -197,6 +209,7 @@ function updateMosaic() {
     for(i = 0; i < states.length; i++) {
       states[i] = 0;
     }
+    completeness = 0;
     if(typeof endRewind != 'undefined') endRewind();
   }
   lastBackwards = backwards;
