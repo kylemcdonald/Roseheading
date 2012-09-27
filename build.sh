@@ -3,5 +3,5 @@ java -jar compiler.jar \
 	--js=shared/Mosaic.js\
 	--js=shared/BaseGenerator.js\
 	--js=shared/Translations.js\
-	--js=CloudRaw/Sketch.js\
+	--js=RoseheadingRaw/Sketch.js\
 	--js_output_file=Release/data/Sketch.js
